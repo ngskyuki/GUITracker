@@ -11,7 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = GUITracker
 TEMPLATE = app
 
-FORMS = mainwindow.ui
+FORMS += \
+    mainwindow.ui
 
 SOURCES += main.cpp\
         mainwindow.cpp \
