@@ -14,17 +14,21 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     guiutils.cpp \
-    templatematcher.cpp
+    templatematcher.cpp \
+    emalgorithm.cpp
 
 HEADERS  += mainwindow.h \
     guiutils.h \
-    templatematcher.h
+    templatematcher.h \
+    emalgorithm.h
 
 LIBS += -L/usr/local/lib \
     -lopencv_core \
     -lopencv_highgui \
+    -lopencv_ml \
     -lopencv_imgcodecs \
     -lopencv_imgproc \
+    -lopencv_reg \
     -lopencv_video \
     -lopencv_videoio \
     -lopencv_text
