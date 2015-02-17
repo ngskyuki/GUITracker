@@ -70,6 +70,9 @@ public:
     void match();
 
 private:
+
+    void judgeInit();
+
     string srcFileName;
     string bgFileName;
     string exFileName;
@@ -82,9 +85,12 @@ private:
     Mat tmpDispMat;
     Rect tmpRoiRect;
     vector<struct traj> trj;
+    struct traj judge;
     double timeStamp;
     int frameCount;
+    bool isFirst;
     void transHomography();
+    Mat transHomography();
     void prepareTemplates();
 };
 

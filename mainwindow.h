@@ -35,11 +35,10 @@ private slots:
     void on_btnStop_clicked();
 
 private:
-    bool stopFlag;
     bool initialized;
+    bool stopFlag;
     Ui::MainWindow *ui;
     TemplateMatcher *matcher;
-
     cv::Mat tmp;
     cv::Mat srcMat;
     QPixmap item;

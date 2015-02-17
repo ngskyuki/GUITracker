@@ -12,10 +12,14 @@ TemplateMatcher::TemplateMatcher()
     this->dstPt[3] = Point2f(550, 0);
     this->dstSize = Size(550, 375);
 
+    this->judge.tmpl = cv::imread("/users/yuukifujita/develop/playertracking/playertracking/tmpl/judge.png");
+
     this->trj = this->prepareTraj();
     this->prepareTemplates();
     this->timeStamp = 0.0;
     this->frameCount = 0;
+
+    this->isFirst = true;
 }
 TemplateMatcher::~TemplateMatcher(){}
 
@@ -154,6 +158,14 @@ void TemplateMatcher::transHomography()
     warpPerspective(this->tmpMat, this->tmpMat, homographyMtx, this->getDstSize(), INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
 }
 
+Mat TemplateMatcher::transHomography()
+{
+    Mat homographyMtx = getPerspectiveTransform(this->srcPt, this->dstPt);
+    Mat dst;
+    warpPerspective(this->tmpMat, dst, homographyMtx, this->getDstSize(), INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
+    return dst;
+}
+
 void TemplateMatcher::incrementTime()
 {
     int sec;
@@ -203,17 +215,48 @@ void TemplateMatcher::match()
     Mat tmpMat;
     this->tmpMat.copyTo(tmpMat);
     this->transHomography();
+
+    Mat judgeResult;
+    Rect judgeRect = Rect(0, 0, this->judge.tmpl.cols, this->judge.tmpl.rows);
+    double judgeVal;
+    Point judgePt;
+
+    matchTemplate(tmpMat, this->judge.tmpl, judgeResult, TM_CCOEFF_NORMED);
+    normalize(judgeResult, judgeResult, 0, 1, NORM_MINMAX, -1, Mat());
+
+    minMaxLoc(judgeResult, NULL, &judgeVal, NULL, &judgePt);
+
+    judgeRect.x = judgePt.x;
+    judgeRect.y = judgePt.y;
+
+    /*
+     * TODO: to change '-1' val to const variable "CV_FILLED"
+    */
+    rectangle(tmpMat, judgeRect, Scalar(0, 255, 255), -1);
+
+    if(this->isFirst)
+    {
+        this->judge.currPt = Point2d(judgePt.x, judgePt.y);
+        this->judge.prevPt = Point2d(judgePt.x, judgePt.y);
+    }
+    this->judge.derivX = this->judge.currPt.x - this->judge.prevPt.x;
+    this->judge.derivY = this->judge.currPt.y - this->judge.prevPt.y;
+
+    swap(this->judge.currPt, this->judge.prevPt);
+
+    this->judge.currPt = Point2d(judgePt.x, judgePt.y);
+
+    Mat result;
+    Rect searchRect;
+    int roiX = 0, roiY = 0, roiW = 0, roiH = 0;
+    double maxVal;
+    Point maxPt;
+    Rect roiRect;
     for(size_t i = 0; i < this->trj.size(); i++)
     {
-        Mat result;
-        Rect searchRect;
-        Rect roiRect = Rect(0, 0, this->trj[i].tmpl.cols, this->trj[i].tmpl.rows);
-        int roiX = 0, roiY = 0, roiW = 0, roiH = 0;
-        bool isFirst = true;
-        double maxVal;
-        Point maxPt;
+        roiRect = Rect(0, 0, this->trj[i].tmpl.cols, this->trj[i].tmpl.rows);
 
-        if(isFirst)
+        if(this->isFirst)
         {
             matchTemplate(tmpMat, this->trj[i].tmpl, result, TM_CCOEFF_NORMED);
             normalize(result, result, 0, 1, NORM_MINMAX, -1, Mat());
@@ -226,16 +269,17 @@ void TemplateMatcher::match()
             roiH = trj[i].occlusion ? this->trj[i].tmpl.rows + 10 : this->trj[i].tmpl.rows;
 
             if(roiY < 0) roiY = 0;
-            else if(roiY > this->trj[i].tmpl.rows) roiY = 0;
-            if(roiX > 0) roiX = 0;
-            else if(roiX > this->trj[i].tmpl.cols) roiX = 0;
+            else if(roiY > this->tmpMat.rows) roiY = 0;
+            if(roiX < 0) roiX = 0;
+            else if(roiX > this->tmpMat.cols) roiX = 0;
 
             searchRect = Rect(roiX, roiY, roiW, roiH);
+
             matchTemplate(tmpMat(searchRect), this->trj[i].tmpl, result, TM_CCOEFF_NORMED);
             normalize(result, result, 0, 1, NORM_MINMAX, -1, Mat());
         }
         minMaxLoc(result, NULL, &maxVal, NULL, &maxPt);
-        if(isFirst)
+        if(this->isFirst)
         {
             roiRect.x = maxPt.x;
             roiRect.y = maxPt.y;
@@ -247,21 +291,45 @@ void TemplateMatcher::match()
         }
         rectangle(tmpMat, roiRect, Scalar(0, 255, 255), -1);
         std::string pid = std::to_string(trj[i].playerID);
-        putText(this->tmpDispMat, pid, Point(roiRect.x + 1, roiRect.y + 8), FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 255));
+        putText(this->tmpDispMat, pid, Point(roiRect.x + 1, roiRect.y + 8), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
         rectangle(this->tmpDispMat, roiRect, Scalar(255, 0, 0));
 
-        if(isFirst) trj[i].currPt = Point2d(roiRect.x, roiRect.y);
+        if(this->isFirst)
+        {
+            trj[i].currPt = Point2d(roiRect.x, roiRect.y);
+            trj[i].prevPt = Point2d(roiRect.x, roiRect.y);
+        }
         else
         {
-            swap(this->trj[i].prevPt, this->trj[i].currPt);
-            this->trj[i].currPt = Point2f(roiRect.x, roiRect.y);
-
-            this->trj[i].derivX = this->trj[i].currPt.x - this->trj[i].prevPt.x;
-            this->trj[i].derivY = this->trj[i].currPt.y - this->trj[i].prevPt.y;
-
-            this->trj[i].precision = maxVal;
-            this->trj[i].isCorrect = (maxVal > 0);
+            swap(this->trj[i].currPt, this->trj[i].prevPt);
+            this->trj[i].currPt = Point2d(roiRect.x, roiRect.y);
         }
+        this->trj[i].derivX = this->trj[i].currPt.x - this->trj[i].prevPt.x;
+        this->trj[i].derivY = this->trj[i].currPt.y - this->trj[i].prevPt.y;
+
+        this->trj[i].precision = maxVal;
+        this->trj[i].isCorrect = (maxVal > 0);
+    }
+    bool isMissed = (this->trj[i].precision < 0.4);
+    if(flase)
+    {
+        string additionalImgPath;
+        cin >> additionalImgPath;
+        Mat additionalImg = imread(additionalImgPath, 21);
+
+        Mat tmpResult;
+
+        matchTemplate(this->tmpMat, additionalImg, result, TM_CCOEFF_NORMED);
+        normalize(tmpResult, tmpResult, 0, 1, NORM_MINMAX, -1, Mat());
+        double tmpVal;
+        Point tmpPt;
+        minMaxLoc(tmpResult, NULL, &tmpVal, NULL, &tmpPt);
+
+        this->trj[i].currPt = Point2d(tmpPt.x, tmpPt.y);
+        this->trj[i].derivX = this->trj[i].currPt.x - this->trj[i].prevPt.x;
+        this->trj[i].derivY = this->trj[i].currPt.y - this->trj[i].prevPt.y;
+
+        this->trj[i].precision = tmpVal;
     }
     vector<struct traj>::iterator begin, end, tbegin, tend;
     begin = this->trj.begin();
@@ -278,6 +346,7 @@ void TemplateMatcher::match()
         }
         begin->occlusion = occlusion;
     }
+    if(this->isFirst) this->isFirst = false;
 }
 
 void TemplateMatcher::prepareTemplates()
@@ -289,7 +358,6 @@ void TemplateMatcher::prepareTemplates()
         ss << i;
         templateNames.push_back(tmplRepos + "tmpl" + ss.str() + ".png");
     }
-    vector<Mat> templates;
     for(size_t i = 0; i < templateNames.size(); i++)
     {
         this->trj[i].tmpl = imread(templateNames[i], 21);

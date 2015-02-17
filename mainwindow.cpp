@@ -6,12 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->initialized = false;
     ui->setupUi(this);
     matcher = new TemplateMatcher();
     matcher->setSrcFileName("/users/yuukifujita/develop/playertracking/playertracking/uru1stfull.mp4");
     matcher->setBgFileName("/users/yuukifujita/develop/tracking/tracking/background.png");
     matcher->setExFileName("/users/yuukifujita/develop/tracking/tracking/export.csv");
-    this->initialized = false;
 }
 
 MainWindow::~MainWindow()
@@ -22,6 +22,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_btnChooseSrcFile_clicked()
 {
     this->matcher->setSrcFileName(GuiUtils::getFilePath(this));
+    this->matcher->setup();
 }
 
 void MainWindow::on_btnChooseBgFile_clicked()
@@ -36,10 +37,9 @@ void MainWindow::on_btnChooseExFile_clicked()
 
 void MainWindow::on_btnStart_clicked()
 {
-    if(!this->initialized)
+    if(!initialized)
     {
-        this->stopFlag = false;
-        matcher->setup();
+        this->matcher->setup();
         this->initialized = true;
     }
     if(this->stopFlag) stopFlag = false;
