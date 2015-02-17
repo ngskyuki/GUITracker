@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     this->initialized = false;
     ui->setupUi(this);
+    this->model = new EMAlgorithm();
     matcher = new TemplateMatcher();
     matcher->setSrcFileName("/users/yuukifujita/develop/playertracking/playertracking/uru1stfull.mp4");
     matcher->setBgFileName("/users/yuukifujita/develop/tracking/tracking/background.png");
@@ -66,4 +67,26 @@ void MainWindow::on_btnStart_clicked()
 void MainWindow::on_btnStop_clicked()
 {
     this->stopFlag = true;
+}
+
+void MainWindow::on_btnSetup_clicked()
+{
+    if(!this->initialized)
+    {
+        this->initialized = true;
+        this->matcher->setup();
+        this->matcher->Next();
+        this->matcher->transHomography();
+        this->matcher->initCapture();
+    }
+    if(this->initialized)
+    {
+        cout << "Initialize is done already!" << endl;
+    }
+}
+
+void MainWindow::on_btnTrain_clicked()
+{
+    this->model->applyEM(this->matcher->tmpMat, 3);
+    this->matcher->setTrained(true);
 }

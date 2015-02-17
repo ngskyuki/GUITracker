@@ -67,7 +67,7 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>140</y>
+      <y>220</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -80,13 +80,39 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>180</y>
+      <y>260</y>
       <width>151</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Stop</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnSetup">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>140</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set Up</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnTrain">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>180</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Train</string>
     </property>
    </widget>
   </widget>

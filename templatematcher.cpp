@@ -2,6 +2,7 @@
 
 TemplateMatcher::TemplateMatcher()
 {
+    this->traind = false;
     this->srcPt[0] = Point2f(202.0, 137.0);
     this->srcPt[1] = Point2f(38.0, 279.0);
     this->srcPt[2] = Point2f(687.0, 279.0);
@@ -27,6 +28,15 @@ void TemplateMatcher::setup()
 {
     this->capture = VideoCapture(this->srcFileName);
 }
+void TemplateMatcher::setTrained(bool isTrained)
+{
+    this->traind = isTrained;
+}
+bool TemplateMatcher::getTrained()
+{
+    return this->traind;
+}
+
 void TemplateMatcher::setSrcFileName(string fileName)
 {
     this->srcFileName = fileName;
@@ -59,6 +69,11 @@ VideoCapture TemplateMatcher::getCapture()
 {
     return this->capture;
 }
+void TemplateMatcher::initCapture()
+{
+    this->capture.set(CAP_PROP_POS_MSEC, 0.0);
+}
+
 void TemplateMatcher::setSrcPt(Point2f *srcPt[])
 {
     for(int i = 0; i < 4; i++)

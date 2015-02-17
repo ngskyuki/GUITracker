@@ -8,6 +8,7 @@
 #include <QGraphicsPixmapItem>
 #include "guiutils.h"
 #include "templatematcher.h"
+#include "emalgorithm.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -34,11 +35,16 @@ private slots:
 
     void on_btnStop_clicked();
 
+    void on_btnSetup_clicked();
+
+    void on_btnTrain_clicked();
+
 private:
     bool initialized;
     bool stopFlag;
     Ui::MainWindow *ui;
     TemplateMatcher *matcher;
+    EMAlgorithm *model;
     cv::Mat tmp;
     cv::Mat srcMat;
     QPixmap item;

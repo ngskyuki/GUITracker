@@ -33,6 +33,8 @@ public:
     TemplateMatcher();
     ~TemplateMatcher();
     void setup();
+    void setTrained(bool isTrained);
+    bool getTrained();
     void setSrcFileName(string fileName);
     string getSrcFileName();
     void setBgFileName(string fileName);
@@ -41,6 +43,7 @@ public:
     string getExFileName();
     void setCapture(VideoCapture videoCapture);
     VideoCapture getCapture();
+    void initCapture();
     void setSrcPt(Point2f *srcPt[]);
     Point2f* getSrcPt();
     void setDstPt(Point2f *dstPt[]);
@@ -66,13 +69,13 @@ public:
     vector<struct traj> prepareTraj();
     void exportData();
     void incrementTime();
-
+    void transHomography();
     void match();
 
 private:
 
     void judgeInit();
-
+    bool traind;
     string srcFileName;
     string bgFileName;
     string exFileName;
@@ -89,7 +92,6 @@ private:
     double timeStamp;
     int frameCount;
     bool isFirst;
-    void transHomography();
     Mat transHomography();
     void prepareTemplates();
 };
