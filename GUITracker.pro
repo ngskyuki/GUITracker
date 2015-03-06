@@ -18,12 +18,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     guiutils.cpp \
     templatematcher.cpp \
-    emalgorithm.cpp
+    emalgorithm.cpp \
+    neuralnetwork.cpp \
+    ann.cpp
 
 HEADERS  += mainwindow.h \
     guiutils.h \
     templatematcher.h \
-    emalgorithm.h
+    emalgorithm.h \
+    neuralnetwork.h \
+    ann.h
 
 LIBS += -L/usr/local/lib \
     -lopencv_core \

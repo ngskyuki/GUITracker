@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <stdlib.h>
+
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QMatrix>
@@ -22,6 +24,8 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void setFrameCount(int frameCount);
+    int getFrameCount();
     ~MainWindow();
 private slots:
 
@@ -42,6 +46,7 @@ private slots:
 private:
     bool initialized;
     bool stopFlag;
+    int frameCount;
     Ui::MainWindow *ui;
     TemplateMatcher *matcher;
     EMAlgorithm *model;

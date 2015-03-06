@@ -20,6 +20,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setFrameCount(int frameCount)
+{
+    this->frameCount = frameCount;
+}
+
+int MainWindow::getFrameCount()
+{
+    return this->frameCount;
+}
+
 void MainWindow::on_btnChooseSrcFile_clicked()
 {
     this->matcher->setSrcFileName(GuiUtils::getFilePath(this));
@@ -40,12 +50,15 @@ void MainWindow::on_btnStart_clicked()
 {
     if(!initialized)
     {
+        this->setFrameCount(0);
         this->matcher->setup();
         this->initialized = true;
     }
     if(this->stopFlag) stopFlag = false;
+    char buff[20];
     while(!this->stopFlag)
     {\
+        this->setFrameCount(this->frameCount + 1);
         //this->scene = new QGraphicsScene(0, 0, 550, 375, ui->graphicsView);
         matcher->Next();
         matcher->match();
@@ -60,6 +73,8 @@ void MainWindow::on_btnStart_clicked()
         ui->graphicsView->update();
         ui->graphicsView->repaint();
         ui->graphicsView->show();
+        sprintf(buff, "%d", this->getFrameCount());
+        ui->frameCountLabel->setText(QString(buff));
         qApp->processEvents();
     }
 }
@@ -73,10 +88,11 @@ void MainWindow::on_btnSetup_clicked()
 {
     if(!this->initialized)
     {
+        this->setFrameCount(0);
         this->initialized = true;
         this->matcher->setup();
         this->matcher->Next();
-        this->matcher->transHomography();
+        this->matcher->setTmpMat(this->matcher->transHomography());
         this->matcher->initCapture();
     }
     if(this->initialized)
@@ -87,6 +103,6 @@ void MainWindow::on_btnSetup_clicked()
 
 void MainWindow::on_btnTrain_clicked()
 {
-    this->model->applyEM(this->matcher->tmpMat, 3);
+    this->model->applyEM(this->matcher->getTmpMat(), 3);
     this->matcher->setTrained(true);
 }

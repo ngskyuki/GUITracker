@@ -164,14 +164,14 @@ void TemplateMatcher::Next()
 {
     this->capture >> this->tmpMat;
     if(tmpMat.empty()) cout << "Video is empty!" << endl;
-    this->transHomography();
+    this->tmpMat = this->transHomography();
 }
 
-void TemplateMatcher::transHomography()
-{
-    Mat homographyMtx = getPerspectiveTransform(this->srcPt, this->dstPt);
-    warpPerspective(this->tmpMat, this->tmpMat, homographyMtx, this->getDstSize(), INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
-}
+//void TemplateMatcher::transHomography()
+//{
+//    Mat homographyMtx = getPerspectiveTransform(this->srcPt, this->dstPt);
+//    warpPerspective(this->tmpMat, this->tmpMat, homographyMtx, this->getDstSize(), INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
+//}
 
 Mat TemplateMatcher::transHomography()
 {
@@ -284,9 +284,9 @@ void TemplateMatcher::match()
             roiH = trj[i].occlusion ? this->trj[i].tmpl.rows + 10 : this->trj[i].tmpl.rows;
 
             if(roiY < 0) roiY = 0;
-            else if(roiY > this->tmpMat.rows) roiY = 0;
+            else if(roiY + roiH > this->tmpMat.rows) roiY = this->tmpMat.rows - roiH;
             if(roiX < 0) roiX = 0;
-            else if(roiX > this->tmpMat.cols) roiX = 0;
+            else if(roiX + roiW > this->tmpMat.cols) roiX = this->tmpMat.cols - roiW;
 
             searchRect = Rect(roiX, roiY, roiW, roiH);
 
@@ -303,6 +303,14 @@ void TemplateMatcher::match()
         {
             roiRect.x = maxPt.x + roiX;
             roiRect.y = maxPt.y + roiY;
+        }
+
+        if(this->traind)
+        {
+            /************************************************
+             *  TODO: Add some code for check matching result
+             *
+             ************************************************/
         }
         rectangle(tmpMat, roiRect, Scalar(0, 255, 255), -1);
         std::string pid = std::to_string(trj[i].playerID);
@@ -324,28 +332,30 @@ void TemplateMatcher::match()
 
         this->trj[i].precision = maxVal;
         this->trj[i].isCorrect = (maxVal > 0);
+
+        bool isMissed = (this->trj[i].precision < 0.4);
+        if(false)
+        {
+            string additionalImgPath;
+            cin >> additionalImgPath;
+            Mat additionalImg = imread(additionalImgPath, 21);
+
+            Mat tmpResult;
+
+            matchTemplate(this->tmpMat, additionalImg, result, TM_CCOEFF_NORMED);
+            normalize(tmpResult, tmpResult, 0, 1, NORM_MINMAX, -1, Mat());
+            double tmpVal;
+            Point tmpPt;
+            minMaxLoc(tmpResult, NULL, &tmpVal, NULL, &tmpPt);
+
+            this->trj[i].currPt = Point2d(tmpPt.x, tmpPt.y);
+            this->trj[i].derivX = this->trj[i].currPt.x - this->trj[i].prevPt.x;
+            this->trj[i].derivY = this->trj[i].currPt.y - this->trj[i].prevPt.y;
+
+            this->trj[i].precision = tmpVal;
+        }
     }
-    bool isMissed = (this->trj[i].precision < 0.4);
-    if(flase)
-    {
-        string additionalImgPath;
-        cin >> additionalImgPath;
-        Mat additionalImg = imread(additionalImgPath, 21);
 
-        Mat tmpResult;
-
-        matchTemplate(this->tmpMat, additionalImg, result, TM_CCOEFF_NORMED);
-        normalize(tmpResult, tmpResult, 0, 1, NORM_MINMAX, -1, Mat());
-        double tmpVal;
-        Point tmpPt;
-        minMaxLoc(tmpResult, NULL, &tmpVal, NULL, &tmpPt);
-
-        this->trj[i].currPt = Point2d(tmpPt.x, tmpPt.y);
-        this->trj[i].derivX = this->trj[i].currPt.x - this->trj[i].prevPt.x;
-        this->trj[i].derivY = this->trj[i].currPt.y - this->trj[i].prevPt.y;
-
-        this->trj[i].precision = tmpVal;
-    }
     vector<struct traj>::iterator begin, end, tbegin, tend;
     begin = this->trj.begin();
     end = this->trj.end();

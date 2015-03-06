@@ -115,6 +115,32 @@
      <string>Train</string>
     </property>
    </widget>
+   <widget class="QLabel" name="frameCountLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>340</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>frameCount</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="constFrameLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>320</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>FrameCount:</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

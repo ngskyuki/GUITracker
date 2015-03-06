@@ -64,12 +64,11 @@ public:
     double getTimeStamp();
     void setFrameCount(int frameCount);
     int getFrameCount();
-
+    Mat transHomography();
     void Next();
     vector<struct traj> prepareTraj();
     void exportData();
     void incrementTime();
-    void transHomography();
     void match();
 
 private:
@@ -92,7 +91,6 @@ private:
     double timeStamp;
     int frameCount;
     bool isFirst;
-    Mat transHomography();
     void prepareTemplates();
 };
 

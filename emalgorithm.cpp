@@ -59,11 +59,9 @@ void EMAlgorithm::applyEM(const Mat& src, int nMix)
     const int imageRows = image.rows;
     const int imageCols = image.cols;
 
-    constexpr int dimentions = 3;
-
     Mat reshapedImage = image.reshape(1, imageRows * imageCols);
     Mat samples;
-    reshapedImage.convetTo(samples, CV_64FC1, 1.0 / 255.0);
+    reshapedImage.convertTo(samples, CV_64FC1, 1.0 / 255.0);
 
     EM::Params params;
     params.covMatType = EM::COV_MAT_DEFAULT;
@@ -74,14 +72,15 @@ void EMAlgorithm::applyEM(const Mat& src, int nMix)
     this->means = model->getMeans();
     this->weights = model->getWeights();
 
-    this->resultImage = observeLabelMeans(this->labels, this->means, imageRows, imageCols);
+    this->resultImage = observeLabelsMeans(this->labels, this->means, imageRows, imageCols);
 }
 
 Mat EMAlgorithm::observeLabelsMeans(const Mat& labels, const Mat& means, int height, int width)
 {
+    constexpr int dimentions = 3;
     Mat result(height, width, CV_8UC3);
     MatIterator_<Vec3b> resBegin = result.begin<Vec3b>();
-    MatIterator_<Vec3> resEnd = result.end<Vec3b>();
+    MatIterator_<Vec3b> resEnd = result.end<Vec3b>();
     MatConstIterator_<int> labelBegin = labels.begin<int>();
 
     Mat meansU8;
@@ -113,3 +112,36 @@ Mat vectorize(Mat& img)
     }
     return samples;
 }
+
+/*
+void classify(Mat& src, Mat& dst)
+{
+    Mat tmpImg;
+    src.copyTo(tmpImg);
+
+    map<int, Vec3b> colors = new map<int, Vec3b>();
+    for(int y = 0; y < tmpImg.rows; y++)
+    {
+        for(int x = 0; x < tmpImg.cols; x++)
+        {
+            Mat sample = Mat(1, 0, CV_32FC3);
+            sample.at<float>(0) = tmpImg<float>(y, x);
+            int res = this.model->predict2(sample, noArray()[1]);
+            tmpImg.at<float>(y, x) = colors.operator [res];
+        }
+    }
+}
+vector<Color> createColors(const Mat means)
+{
+    vector<Color> colors;
+    for(int y = 0; y < means.rows; y++)
+    {
+        for(int x = 0; x < means.cols; x++)
+        {
+            Color tmp = means.at<Vec3b>(y, x);
+            colors.push_back(tmp);
+        }
+    }
+    return colors;
+}
+*/
