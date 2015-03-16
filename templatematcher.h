@@ -35,8 +35,10 @@ public:
     void setup();
     void setTrained(bool isTrained);
     bool getTrained();
-    void setSrcFileName(string fileName);
-    string getSrcFileName();
+    void setLeftSrcFileName(string leftSrcFileName);
+    string getLeftSrcFileName();
+    void setRightSrcFileName(string rightSrcFileName);
+    string getRightSrcFileName();
     void setBgFileName(string fileName);
     string getBgFileName();
     void setExFileName(string fileName);
@@ -44,14 +46,24 @@ public:
     void setCapture(VideoCapture videoCapture);
     VideoCapture getCapture();
     void initCapture();
-    void setSrcPt(Point2f *srcPt[]);
-    Point2f* getSrcPt();
-    void setDstPt(Point2f *dstPt[]);
-    Point2f* getDstPt();
+    void setLeftSrcPt(Point2f *srcPt[]);
+    Point2f* getLeftSrcPt();
+    void setLeftDstPt(Point2f *dstPt[]);
+    Point2f* getLeftDstPt();
+    void setRightSrcPt(Point2f *srcPt[]);
+    Point2f* getRightSrcPt();
+    void setRightDstPt(Point2f *dstPt[]);
+    Point2f* getRightDstPt();
+
     void setDstSize(Size size);
     Size getDstSize();
+
+    Mat getTmpLeftMat();
+    Mat getTmpRightMat();
+
     void setTmpMat(Mat tmpMat);
     Mat getTmpMat();
+
     void setBg(Mat bg);
     Mat getBg();
     void setTmpDispMat(Mat tmpDispMat);
@@ -72,17 +84,22 @@ public:
     void match();
 
 private:
-
+    bool automatic;
     void judgeInit();
     bool traind;
-    string srcFileName;
+    string leftSrcFileName;
+    string rightSrcFileName;
     string bgFileName;
     string exFileName;
     VideoCapture capture;
-    Point2f srcPt[4];
-    Point2f dstPt[4];
+    Point2f leftSrcPt[4];
+    Point2f leftDstPt[4];
+    Point2f rightSrcPt[4];
+    Point2f rightDstPt[4];
     Size dstSize;
     Mat tmpMat;
+    Mat tmpLeftMat;
+    Mat tmpRightMat;
     Mat bg;
     Mat tmpDispMat;
     Rect tmpRoiRect;

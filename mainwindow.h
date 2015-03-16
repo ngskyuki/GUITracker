@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QMatrix>
+#include <QMouseEvent>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include "guiutils.h"
@@ -13,6 +14,9 @@
 #include "emalgorithm.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "myqgraphicsscene.h"
+#include <QGraphicsSceneMouseEvent>
+#include "settingdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,14 +25,12 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     explicit MainWindow(QWidget *parent = 0);
     void setFrameCount(int frameCount);
     int getFrameCount();
     ~MainWindow();
 private slots:
-
     void on_btnChooseSrcFile_clicked();
 
     void on_btnChooseBgFile_clicked();
@@ -43,17 +45,24 @@ private slots:
 
     void on_btnTrain_clicked();
 
+//    void setCoordinates(QPointF pt);
+
+    void on_btnInit_clicked();
+
 private:
     bool initialized;
     bool stopFlag;
     int frameCount;
+    QPointF currPoint;
     Ui::MainWindow *ui;
     TemplateMatcher *matcher;
     EMAlgorithm *model;
     cv::Mat tmp;
     cv::Mat srcMat;
     QPixmap item;
-    QGraphicsScene* scene;
+    MyQGraphicsScene* scene;
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // MAINWINDOW_H

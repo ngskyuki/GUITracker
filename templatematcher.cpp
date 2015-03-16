@@ -2,17 +2,19 @@
 
 TemplateMatcher::TemplateMatcher()
 {
+    this->automatic = true;
     this->traind = false;
-    this->srcPt[0] = Point2f(202.0, 137.0);
-    this->srcPt[1] = Point2f(38.0, 279.0);
-    this->srcPt[2] = Point2f(687.0, 279.0);
-    this->srcPt[3] = Point2f(522.0, 137.0);
-    this->dstPt[0] = Point2f(0.0, 0.0);
-    this->dstPt[1] = Point2f(0, 375);
-    this->dstPt[2] = Point2f(550, 375);
-    this->dstPt[3] = Point2f(550, 0);
-    this->dstSize = Size(550, 375);
-
+//    this->srcPt[0] = Point2f(202.0, 137.0);
+//    this->srcPt[1] = Point2f(38.0, 279.0);
+//    this->srcPt[2] = Point2f(687.0, 279.0);
+//    this->srcPt[3] = Point2f(522.0, 137.0);
+//    this->dstPt[0] = Point2f(0.0, 0.0);
+//    this->dstPt[1] = Point2f(0, 375);
+//    this->dstPt[2] = Point2f(550, 375);
+//    this->dstPt[3] = Point2f(550, 0);
+//    this->dstSize = Size(550, 375);
+    this->tmpLeftMat = cv::imread("/users/yuukifujita/develop/tracking/tracking/background.png");
+    this->tmpRightMat = cv::imread("/users/yuukifujita/develop/tracking/tracking/background.png");
     this->judge.tmpl = cv::imread("/users/yuukifujita/develop/playertracking/playertracking/tmpl/judge.png");
 
     this->trj = this->prepareTraj();
@@ -26,7 +28,7 @@ TemplateMatcher::~TemplateMatcher(){}
 
 void TemplateMatcher::setup()
 {
-    this->capture = VideoCapture(this->srcFileName);
+//    this->capture = VideoCapture(this->srcFileName);
 }
 void TemplateMatcher::setTrained(bool isTrained)
 {
@@ -37,14 +39,24 @@ bool TemplateMatcher::getTrained()
     return this->traind;
 }
 
-void TemplateMatcher::setSrcFileName(string fileName)
+void TemplateMatcher::setLeftSrcFileName(string leftSrcFileName)
 {
-    this->srcFileName = fileName;
+    this->leftSrcFileName = leftSrcFileName;
 }
-string TemplateMatcher::getSrcFileName()
+string TemplateMatcher::getLeftSrcFileName()
 {
-    return this->srcFileName;
+    return this->leftSrcFileName;
 }
+
+void TemplateMatcher::setRightSrcFileName(string rightSrcFileName)
+{
+    this->rightSrcFileName = rightSrcFileName;
+}
+string TemplateMatcher::getRightSrcFileName()
+{
+    return this->rightSrcFileName;
+}
+
 void TemplateMatcher::setBgFileName(string fileName)
 {
     this->bgFileName = fileName;
@@ -74,27 +86,53 @@ void TemplateMatcher::initCapture()
     this->capture.set(CAP_PROP_POS_MSEC, 0.0);
 }
 
-void TemplateMatcher::setSrcPt(Point2f *srcPt[])
+void TemplateMatcher::setLeftSrcPt(Point2f *srcPt[])
 {
-    for(int i = 0; i < 4; i++)
-    {
-        this->srcPt[i] = *srcPt[i];
-    }
+//    for(int i = 0; i < 4; i++)
+//    {
+//        this->srcPt[i] = *srcPt[i];
+//    }
 }
-Point2f* TemplateMatcher::getSrcPt()
+Point2f* TemplateMatcher::getLeftSrcPt()
 {
-    return this->srcPt;
+//    return this->srcPt;
+    return new Point2f[4];
 }
-void TemplateMatcher::setDstPt(Point2f **dstPt)
+void TemplateMatcher::setLeftDstPt(Point2f **dstPt)
 {
-    for(int i = 0; i < 4; i++)
-    {
-        this->dstPt[i] = *dstPt[i];
-    }
+//    for(int i = 0; i < 4; i++)
+//    {
+//        this->dstPt[i] = *dstPt[i];
+//    }
 }
-Point2f* TemplateMatcher::getDstPt()
+Point2f* TemplateMatcher::getLeftDstPt()
 {
-    return this->dstPt;
+    //return this->dstPt;
+    return new Point2f[4];
+}
+void TemplateMatcher::setRightSrcPt(Point2f *srcPt[])
+{
+//    for(int i = 0; i < 4; i++)
+//    {
+//        this->srcPt[i] = *srcPt[i];
+//    }
+}
+Point2f* TemplateMatcher::getRightSrcPt()
+{
+//    return this->srcPt;
+    return new Point2f[4];
+}
+void TemplateMatcher::setRightDstPt(Point2f **dstPt)
+{
+//    for(int i = 0; i < 4; i++)
+//    {
+//        this->dstPt[i] = *dstPt[i];
+//    }
+}
+Point2f* TemplateMatcher::getRightDstPt()
+{
+    //return this->dstPt;
+    return new Point2f[4];
 }
 void TemplateMatcher::setDstSize(Size size)
 {
@@ -104,6 +142,17 @@ Size TemplateMatcher::getDstSize()
 {
     return this->dstSize;
 }
+
+
+Mat TemplateMatcher::getTmpLeftMat()
+{
+    return this->tmpLeftMat;
+}
+Mat TemplateMatcher::getTmpRightMat()
+{
+    return this->tmpRightMat;
+}
+
 void TemplateMatcher::setTmpMat(Mat tmpMat)
 {
     this->tmpMat = tmpMat;
@@ -116,6 +165,9 @@ void TemplateMatcher::setBg(Mat bg)
 {
     this->bg = bg;
 }
+
+
+
 Mat TemplateMatcher::getBg()
 {
     return this->bg;
@@ -175,9 +227,9 @@ void TemplateMatcher::Next()
 
 Mat TemplateMatcher::transHomography()
 {
-    Mat homographyMtx = getPerspectiveTransform(this->srcPt, this->dstPt);
+//    Mat homographyMtx = getPerspectiveTransform(this->srcPt, this->dstPt);
     Mat dst;
-    warpPerspective(this->tmpMat, dst, homographyMtx, this->getDstSize(), INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
+//    warpPerspective(this->tmpMat, dst, homographyMtx, this->getDstSize(), INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
     return dst;
 }
 

@@ -12,7 +12,8 @@ TARGET = GUITracker
 TEMPLATE = app
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    settingdialog.ui
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -20,14 +21,22 @@ SOURCES += main.cpp\
     templatematcher.cpp \
     emalgorithm.cpp \
     neuralnetwork.cpp \
-    ann.cpp
+    ann.cpp \
+    myqgraphicsscene.cpp \
+    settingdialog.cpp \
+    imageinfo.cpp \
+    tracker.cpp
 
 HEADERS  += mainwindow.h \
     guiutils.h \
     templatematcher.h \
     emalgorithm.h \
     neuralnetwork.h \
-    ann.h
+    ann.h \
+    myqgraphicsscene.h \
+    settingdialog.h \
+    imageinfo.h \
+    tracker.h
 
 LIBS += -L/usr/local/lib \
     -lopencv_core \
