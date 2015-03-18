@@ -6,17 +6,17 @@
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QMatrix>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
-#include "guiutils.h"
-#include "templatematcher.h"
-#include "emalgorithm.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "myqgraphicsscene.h"
 #include <QGraphicsSceneMouseEvent>
+#include "guiutils.h"
 #include "settingdialog.h"
+#include "tracker.h"
+#include "imageinfo.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,8 +27,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void setFrameCount(int frameCount);
-    int getFrameCount();
     ~MainWindow();
 private slots:
     void on_btnChooseSrcFile_clicked();
@@ -52,15 +50,21 @@ private slots:
 private:
     bool initialized;
     bool stopFlag;
-    int frameCount;
+    int currentId;
     QPointF currPoint;
     Ui::MainWindow *ui;
-    TemplateMatcher *matcher;
-    EMAlgorithm *model;
+
+    ImageInfo *imgInfo;
+    Tracker *tracker;
+
+    QGraphicsScene* scene;
+
     cv::Mat tmp;
     cv::Mat srcMat;
     QPixmap item;
-    MyQGraphicsScene* scene;
+
+    void setImg(QImage img);
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 };

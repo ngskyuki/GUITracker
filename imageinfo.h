@@ -27,9 +27,9 @@ public:
     Mat getTmpImg();
     void setDispImg(Mat img);
     Mat getDispImg();
-    void setSrcPtLeft(Point2f *pt[]);
+    void setSrcPtLeft(Point2f pt[]);
     Point2f* getSrcPtLeft();
-    void setSrcPtRight(Point2f *pt[]);
+    void setSrcPtRight(Point2f pt[]);
     Point2f* getSrcPtRight();
     void setRoiRect(Rect roi);
     Rect getRoiRect();
@@ -37,9 +37,10 @@ public:
     Size getDstSize();
 
     void next();
-    void setup();
+    void setup(bool forInit = false);
     void mergeImg();
     void transHomography();
+    bool validate();
 
     Mat tmpImg;
     Mat dispImg;

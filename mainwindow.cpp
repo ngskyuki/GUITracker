@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtGui>
-#include "myqgraphicsscene.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,12 +12,12 @@ MainWindow::MainWindow(QWidget *parent) :
     qApp->installEventFilter(this);
 
     ui->graphicsView->setMouseTracking(true);
-    this->model = new EMAlgorithm();
-    matcher = new TemplateMatcher();
-    matcher->setLeftSrcFileName("/users/yuukifujita/develop/playertracking/playertracking/footballSampleLeft.mp4");
-    matcher->setRightSrcFileName("/users/yuukifujita/develop/playertracking/playertracking/footballSampleRight.mp4");
-    matcher->setBgFileName("/users/yuukifujita/develop/tracking/tracking/background.png");
-    matcher->setExFileName("/users/yuukifujita/develop/tracking/tracking/export.csv");
+    string fileNames[] = {
+        "/users/yuukifujita/develop/playertracking/playertracking/footballSampleLeft.mp4",
+        "/users/yuukifujita/develop/playertracking/playertracking/footballSampleRight.mp4"
+    };
+    this->imgInfo = new ImageInfo(fileNames);
+    this->tracker = new Tracker(this->imgInfo, 10);
 }
 
 MainWindow::~MainWindow()
@@ -29,9 +28,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if(event->type() == QEvent::MouseButtonPress)
     {
+        if(obj != this) return false;
         if(obj == this->ui->frameCountLabel ||
                 obj == this->ui->constFrameLabel ||
-                obj == this->ui->btnInit) return false;
+                obj == this->ui->btnInit ||
+                obj == this->ui->btnChooseBgFile ||
+                obj == this->ui->btnChooseExFile ||
+                obj == this->ui->btnChooseSrcFile ||
+                obj == this->ui->btnSetup ||
+                obj == this->ui->btnStart ||
+                obj == this->ui->btnStop ||
+                obj == this->ui->btnTrain) return false;
         QMouseEvent *mEvent = static_cast<QMouseEvent*>(event);
         if(mEvent->x() < 10 || mEvent->y() < 10) return false;
         if(mEvent->x() > 560 || mEvent->y() > 385) return false;
@@ -41,30 +48,21 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-void MainWindow::setFrameCount(int frameCount)
-{
-    this->frameCount = frameCount;
-}
-
-int MainWindow::getFrameCount()
-{
-    return this->frameCount;
-}
 
 void MainWindow::on_btnChooseSrcFile_clicked()
 {
-    this->matcher->setLeftSrcFileName(GuiUtils::getFilePath(this));
-    this->matcher->setup();
+//    this->matcher->setLeftSrcFileName(GuiUtils::getFilePath(this));
+//    this->matcher->setup();
 }
 
 void MainWindow::on_btnChooseBgFile_clicked()
 {
-    this->matcher->setBgFileName(GuiUtils::getFilePath(this));
+//    this->matcher->setBgFileName(GuiUtils::getFilePath(this));
 }
 
 void MainWindow::on_btnChooseExFile_clicked()
 {
-    this->matcher->setExFileName(GuiUtils::getFilePath(this));
+    this->tracker->setExFileName(GuiUtils::getFilePath(this));
 }
 
 //void MainWindow::setCoordinates(QPointF pt)
@@ -77,38 +75,44 @@ void MainWindow::on_btnChooseExFile_clicked()
 
 void MainWindow::on_btnStart_clicked()
 {
-    if(!initialized)
+    if(!(this->tracker->validate()))
     {
-        this->setFrameCount(0);
-        this->matcher->setup();
-        this->initialized = true;
+        QMessageBox::warning(this, tr("Warning!"),
+                             tr("Please initialize Tracker!"),
+                             QMessageBox::Ok);
+        return;
     }
-    if(this->stopFlag) stopFlag = false;
     char buff[20];
     while(!this->stopFlag)
-    {\
-        this->setFrameCount(this->frameCount + 1);
-        //this->scene = new QGraphicsScene(0, 0, 550, 375, ui->graphicsView);
-        matcher->Next();
-        matcher->match();
-        this->srcMat = matcher->getTmpDispMat();
-        //QImage image = GuiUtil::Mat2QImg(srcMat);
-        cv::cvtColor(this->srcMat, this->tmp, cv::COLOR_BGR2RGB);
-        QImage image((const unsigned char*)tmp.data, tmp.cols, tmp.rows, tmp.step, QImage::Format_RGB888);
-        this->item = QPixmap::fromImage(image);
-        this->scene = new MyQGraphicsScene(this);
-        QObject::connect(this->scene, SIGNAL(mouseCoordinates(QPointF)),
-                                             this, SLOT(setCoordinates(QPointF)));
-        this->scene->addPixmap(item);
-        ui->graphicsView->setScene(scene);
-        ui->graphicsView->update();
-        ui->graphicsView->repaint();
-        ui->graphicsView->show();
-        sprintf(buff, "%d", this->getFrameCount());
+    {
+        if(this->currentId == this->tracker->getObjectNumber())
+        {
+            this->tracker->setCurrentId(0);
+            this->currentId = this->tracker->getCurrentId();
+            this->tracker->next();
+        }
+        this->tracker->match();
+        QImage image = GuiUtils::Mat2QImg(this->imgInfo->getDispImg());
+        this->setImg(image);
+        sprintf(buff, "%d", this->tracker->getFrameCount());
         ui->frameCountLabel->setText(QString(buff));
         qApp->processEvents();
+        this->tracker->nextPlayer();
+        this->currentId = this->tracker->getCurrentId();
     }
 }
+
+void MainWindow::setImg(QImage img)
+{
+    this->item = QPixmap::fromImage(img);
+    this->scene = new QGraphicsScene(this);
+    this->scene->addPixmap(item);
+    this->ui->graphicsView->setScene(scene);
+    this->ui->graphicsView->update();
+    this->ui->graphicsView->repaint();
+    this->ui->graphicsView->show();
+}
+
 void MainWindow::on_btnStop_clicked()
 {
     this->stopFlag = true;
@@ -118,12 +122,6 @@ void MainWindow::on_btnSetup_clicked()
 {
     if(!this->initialized)
     {
-        this->setFrameCount(0);
-        this->initialized = true;
-        this->matcher->setup();
-        this->matcher->Next();
-        this->matcher->setTmpMat(this->matcher->transHomography());
-        this->matcher->initCapture();
     }
     if(this->initialized)
     {
@@ -134,15 +132,24 @@ void MainWindow::on_btnSetup_clicked()
 
 void MainWindow::on_btnTrain_clicked()
 {
-    this->model->applyEM(this->matcher->getTmpMat(), 3);
-    this->matcher->setTrained(true);
+//    this->model->applyEM(this->matcher->getTmpMat(), 3);
+//    this->matcher->setTrained(true);
 }
 
 void MainWindow::on_btnInit_clicked()
 {
-    SettingDialog *dialog = new SettingDialog(this, GuiUtils::Mat2QImg(this->matcher->getTmpLeftMat()),
-                                             GuiUtils::Mat2QImg(this->matcher->getTmpRightMat()));
+    if(!(this->imgInfo->validate()))
+    {
+        QMessageBox::warning(this, tr("Warning!"),
+                             tr("Please initialize ImageInfo!"),
+                             QMessageBox::Ok);
+    }
+    SettingDialog *dialog = new SettingDialog(this, GuiUtils::Mat2QImg(this->imgInfo->getTmpLeftImg()),
+                                             GuiUtils::Mat2QImg(this->imgInfo->getTmpRightImg()));
     dialog->exec();
     if(dialog->result() == QDialog::Accepted)
-    {}
+    {
+        this->imgInfo->setSrcPtLeft(dialog->getSrcPtLeft());
+        this->imgInfo->setSrcPtRight(dialog->getSrcPtRight());
+    }
 }

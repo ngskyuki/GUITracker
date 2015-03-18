@@ -5,7 +5,15 @@
 #include <QPointF>
 #include <QDialog>
 #include <QImage>
+#include <QMouseEvent>
+#include <QMessageBox>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 #include "guiutils.h"
+
+using namespace cv;
 
 namespace Ui {
 class SettingDialog;
@@ -17,9 +25,12 @@ class SettingDialog : public QDialog
 
 public:
     explicit SettingDialog(QWidget *parent = 0);
-    SettingDialog(QWidget *parent, QImage img1, QImage img2);
+    SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight);
     ~SettingDialog();
     void setPointImage();
+    Point2f *getSrcPtLeft();
+    Point2f *getSrcPtRight();
+    bool validate();
 
 private slots:
     void on_btnOk_clicked();
@@ -28,16 +39,19 @@ private slots:
 
 private:
     Ui::SettingDialog *ui;
-    QImage img1;
-    QImage img2;
+    QImage imgLeft;
+    QImage imgRight;
     int pointNum;
     int imageNum;
 
-    QPointF srcPt1[4];
-    QPointF dstPt1[4];
-    QPointF srcPt2[4];
-    QPointF dstPt2[4];
+    Point2f currPt;
 
+    Point2f srcPtLeft[4];
+    Point2f dstPtLeft[4];
+    Point2f srcPtRight[4];
+    Point2f dstPt2Right[4];
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // SETTINGDIALOG_H

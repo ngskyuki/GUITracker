@@ -18,22 +18,18 @@ FORMS += \
 SOURCES += main.cpp\
         mainwindow.cpp \
     guiutils.cpp \
-    templatematcher.cpp \
     emalgorithm.cpp \
     neuralnetwork.cpp \
     ann.cpp \
-    myqgraphicsscene.cpp \
     settingdialog.cpp \
     imageinfo.cpp \
     tracker.cpp
 
 HEADERS  += mainwindow.h \
     guiutils.h \
-    templatematcher.h \
     emalgorithm.h \
     neuralnetwork.h \
     ann.h \
-    myqgraphicsscene.h \
     settingdialog.h \
     imageinfo.h \
     tracker.h

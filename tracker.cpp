@@ -7,6 +7,7 @@ Tracker::Tracker(int objectNumber, bool automatic, bool isTrained)
     this->isTrained = isTrained;
     this->timeStamp = 0.0;
     this->frameCount = 0;
+    this->currentId = 0;
 }
 
 Tracker::Tracker(ImageInfo *imgInfo, int objectNumber, bool automatic, bool isTrained)
@@ -19,6 +20,7 @@ Tracker::Tracker(ImageInfo *imgInfo, int objectNumber, bool automatic, bool isTr
 
     this->timeStamp = 0.0;
     this->frameCount = 0;
+    this->currentId = 0;
 }
 
 Tracker::~Tracker()
@@ -32,9 +34,9 @@ void Tracker::setImageInfo(ImageInfo *info) { this->imgInfo = info; }
 
 ImageInfo *Tracker::getImageInfo() { return this->imgInfo; }
 
-void Tracker::setCurrentPlayerId(int id) { this->currentPlayerId = id; }
+void Tracker::setCurrentId(int currentId) { this->currentId = currentId; }
 
-int Tracker::getCurrentPlayerId() { return this->currentPlayerId; }
+int Tracker::getCurrentId() { return this->currentId; }
 
 void Tracker::setObjectNumber(int num) { this->objectNumber = num; }
 
@@ -60,10 +62,13 @@ int Tracker::getFrameCount() { return this->frameCount; }
 
 void Tracker::setFrameCount(int frameCount) { this->frameCount = frameCount; }
 
+void Tracker::nextPlayer() { this->currentId++; this->incrementTime(); }
+
 void Tracker::next()
 {
     this->imgInfo->setup();
     if(this->imgInfo->getTmpImg().empty()) cout << "Video is empty!" << endl;
+    this->frameCount++;
 }
 
 void Tracker::incrementTime()
@@ -117,7 +122,6 @@ void Tracker::prepareTraj(int trajCount)
     }
 }
 
-
 void Tracker::match()
 {
     if(this->imgInfo->tmpImg.empty()) { cout << "Please initialize!" << endl; return; }
@@ -127,7 +131,7 @@ void Tracker::match()
     this->imgInfo->getTmpImg().copyTo(tmp);
     double maxVal;
     Point maxPt;
-    struct traj *tmpTraj = this->trj[this->currentPlayerId];
+    struct traj *tmpTraj = this->trj[this->currentId];
 
     Rect roiRect = Rect(0, 0, tmpTraj->tmpl.cols, tmpTraj->tmpl.rows);
     Rect searchRect;
@@ -175,7 +179,7 @@ void Tracker::match()
      */
     rectangle(this->imgInfo->tmpImg, roiRect, Scalar(0, 255, 255), -1);
     stringstream pid;
-    pid << this->currentPlayerId;
+    pid << this->currentId;
     putText(this->imgInfo->dispImg, pid.str(), Point(roiRect.x + 1, roiRect.y + 8), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
     rectangle(this->imgInfo->dispImg, roiRect, Scalar(255, 0, 0));
 
@@ -194,4 +198,13 @@ void Tracker::match()
 
     tmpTraj->precision = maxVal;
     tmpTraj->isCorrect = (maxVal > 0);
+}
+
+bool Tracker::validate()
+{
+    bool result = true;
+    if(this->exFileName == NULL) result = false;
+    if(this->imgInfo == NULL) result = false;
+    if(this->trj.size() == 0) result = false;
+    return result;
 }

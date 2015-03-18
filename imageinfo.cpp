@@ -7,9 +7,8 @@ ImageInfo::ImageInfo()
 
 ImageInfo::ImageInfo(string fileNames[])
 {
-    for(int i = 0; i < 2; i++) { cout << "Please input 2 video files" << endl; return; }
     this->setCapture(fileNames);
-    this->setup();
+    this->setup(true);
 }
 
 ImageInfo::~ImageInfo()
@@ -45,27 +44,19 @@ void ImageInfo::setDispImg(Mat img) { this->dispImg = img; }
 
 Mat ImageInfo::getDispImg() { return this->dispImg; }
 
-void ImageInfo::setSrcPtLeft(Point2f *pt[])
+void ImageInfo::setSrcPtLeft(Point2f pt[])
 {
-    /*Validation*/
-    for(int i = 0; i < 4; i++) { if(pt[i] == NULL) { cout << "Please set 4 points." << endl; return; } }
-    Point tmp;
     for(int i = 0; i < 4; i++) {
-        tmp  = Point(pt[i]->x, pt[i]->y);
-        this->srcPtLeft[i] = tmp;
+        this->srcPtLeft[i] = Point(pt[i].x, pt[i].y);
     }
 }
 
 Point2f *ImageInfo::getSrcPtLeft() { return this->srcPtLeft; }
 
-void ImageInfo::setSrcPtRight(Point2f *pt[])
+void ImageInfo::setSrcPtRight(Point2f pt[])
 {
-    /*Validation*/
-    for(int i = 0; i < 4; i++) {if(pt[i] == NULL) { cout << "Please set 4 points." << endl; return; } }
-    Point tmp;
     for(int i = 0; i < 4; i++) {
-        tmp = Point(pt[i]->x, pt[i]->y);
-        this->srcPtRight[i] = tmp;
+        this->srcPtRight[i] = Point2f(pt[i].x, pt[i].y);
     }
 }
 
@@ -79,15 +70,18 @@ void ImageInfo::setDstSize(Size size) { this->dstSize = size; }
 
 Size ImageInfo::getDstSize() { return this->dstSize; }
 
-void ImageInfo::setup()
+void ImageInfo::setup(bool forInit)
 {
     this->next();
-    this->transHomography();
-    this->mergeImg();
+    if(!forInit)
+    {
+        this->transHomography();
+        this->mergeImg();
+    }
 }
 
 void ImageInfo::next()
-{
+{ 
     this->capture[0] >> this->tmpLeftImg;
     this->capture[1] >> this->tmpRightImg;
 }
@@ -109,4 +103,12 @@ void ImageInfo::transHomography()
     warpPerspective(this->tmpLeftImg, this->tmpLeftImg, homographyMtx, this->dstSize, INTER_LANCZOS4 + WARP_FILL_OUTLIERS);
     homographyMtx = getPerspectiveTransform(this->srcPtRight, this->dstPtRight);
     warpPerspective(this->tmpRightImg, this->tmpRightImg, homographyMtx, this->dstSize, INTER_LANCZOS4, WARP_FILL_OUTLIERS);
+}
+
+bool ImageInfo::validate()
+{
+    if(this->tmpLeftImg.empty()  ||
+            this->tmpRightImg.empty())
+        return false;
+    return true;
 }

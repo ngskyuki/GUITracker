@@ -40,8 +40,8 @@ public:
     ImageInfo *getImageInfo();
     void setObjectNumber(int num);
     int getObjectNumber();
-    void setCurrentPlayerId(int id);
-    int getCurrentPlayerId();
+    void setCurrentId(int currentId);
+    int getCurrentId();
     void setExFileName(string fileName);
     string getExFileName();
     void setIsFirst(bool isFirst);
@@ -58,12 +58,14 @@ public:
     void exportData();
     void incrementTime();
     void match();
+    bool validate();
+    void nextPlayer();
 private:\
     bool automatic;
     bool isTrained;
     bool isFirst;
     int objectNumber;
-    int currentPlayerId;
+    int currentId;
     string exFileName;
     ImageInfo *imgInfo;
     std::vector<struct traj*> trj;
