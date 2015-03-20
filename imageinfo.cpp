@@ -70,6 +70,10 @@ void ImageInfo::setDstSize(Size size) { this->dstSize = size; }
 
 Size ImageInfo::getDstSize() { return this->dstSize; }
 
+void ImageInfo::setInitialized(bool intialized) { this->initialized = initialized; }
+
+bool ImageInfo::getInitialized() { return this->initialized; }
+
 void ImageInfo::setup(bool forInit)
 {
     this->next();

@@ -11,19 +11,30 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <vector>
 #include "imageinfo.h"
 
 using namespace std;
 using namespace cv;
 
+struct exData
+{
+    float timeStamp;
+    int playerID;
+    Point2f currPt;
+    float precision;
+    bool isCorrect;
+    bool occlusion;
+};
+
 struct traj
 {
     int playerID;
-    Point2d currPt;
-    Point2d prevPt;
-    double derivX;
-    double derivY;
-    double precision;
+    Point2f currPt;
+    Point2f prevPt;
+    float derivX;
+    float derivY;
+    float precision;
     bool isCorrect;
     bool occlusion;
     Mat tmpl;
@@ -38,6 +49,8 @@ public:
     void setup();
     void setImageInfo(ImageInfo *info);
     ImageInfo *getImageInfo();
+    void setAutomatic(bool automatic);
+    bool getAutomatic();
     void setObjectNumber(int num);
     int getObjectNumber();
     void setCurrentId(int currentId);
@@ -48,16 +61,21 @@ public:
     bool getIsFirst();
     void setTrained(bool isTrained);
     bool getTrained();
-    void setTimeStamp(double timeStamp);
-    double getTimeStamp();
+    void setTimeStamp(float timeStamp);
+    float getTimeStamp();
     void setFrameCount(int frameCount);
     int getFrameCount();
+    void setExData(vector<struct exData*> *exData);
+    vector<struct exData*> *getExData();
+
     void next();
     void init();
     void prepareTraj(int trajCount);
+    void exportData(struct exData* data);
     void exportData();
     void incrementTime();
     void match();
+    void track(Point2f pt);
     bool validate();
     void nextPlayer();
 private:\
@@ -69,8 +87,9 @@ private:\
     string exFileName;
     ImageInfo *imgInfo;
     std::vector<struct traj*> trj;
-    double timeStamp;
+    float timeStamp;
     int frameCount;
+    vector<struct exData*> *exData;
     void prepareTemplates();
 
 };

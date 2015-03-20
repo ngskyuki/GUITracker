@@ -39,19 +39,21 @@ private slots:
 
     void on_btnStop_clicked();
 
-    void on_btnSetup_clicked();
-
     void on_btnTrain_clicked();
 
-//    void setCoordinates(QPointF pt);
-
     void on_btnInit_clicked();
+
+    void on_isAutomatic_stateChanged(int arg1);
+
+    void on_btnCommit_clicked();
+
+    void on_btnPreview_clicked();
 
 private:
     bool initialized;
     bool stopFlag;
     int currentId;
-    QPointF currPoint;
+    Point2d currPoint;
     Ui::MainWindow *ui;
 
     ImageInfo *imgInfo;
@@ -64,6 +66,8 @@ private:
     QPixmap item;
 
     void setImg(QImage img);
+    void tracking();
+    void prepareTracker();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

@@ -37,24 +37,11 @@
      <string>Source File</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnChooseBgFile">
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>50</y>
-      <width>151</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Background Image</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btnChooseExFile">
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>90</y>
+      <y>50</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -67,7 +54,7 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>210</y>
+      <y>130</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -80,7 +67,7 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>250</y>
+      <y>170</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -89,24 +76,11 @@
      <string>Stop</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnSetup">
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>130</y>
-      <width>151</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Set Up</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btnTrain">
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>170</y>
+      <y>90</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -118,8 +92,8 @@
    <widget class="QLabel" name="frameCountLabel">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>350</y>
+      <x>660</x>
+      <y>370</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -132,8 +106,8 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>330</y>
-      <width>91</width>
+      <y>370</y>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
@@ -145,26 +119,91 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>370</y>
+      <y>350</y>
       <width>81</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>frameCount</string>
+     <string>Coordinates</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnInit">
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>290</y>
+      <y>210</y>
       <width>151</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Initialize</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="isAutomatic">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>300</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Auto Tracking</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="constCoordinatesLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>330</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Current Coordinates:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="curPlayerId">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>330</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>id</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnCommit">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>250</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Commit</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnPreview">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>250</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Preview</string>
     </property>
    </widget>
   </widget>

@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
+#include <QMessageBox>
 
 using namespace std;
 using namespace cv;
@@ -36,6 +36,9 @@ public:
     void setDstSize(Size size);
     Size getDstSize();
 
+    void setInitialized(bool intialized);
+    bool getInitialized();
+
     void next();
     void setup(bool forInit = false);
     void mergeImg();
@@ -48,7 +51,7 @@ public:
 private:
 
     VideoCapture capture[2];
-
+    bool initialized;
     Mat tmpLeftImg;
     Mat tmpRightImg;
     Rect roiRect;

@@ -38,6 +38,10 @@ void Tracker::setCurrentId(int currentId) { this->currentId = currentId; }
 
 int Tracker::getCurrentId() { return this->currentId; }
 
+void Tracker::setAutomatic(bool automatic) { this->automatic = automatic; }
+
+bool Tracker::getAutomatic() { return this->automatic; }
+
 void Tracker::setObjectNumber(int num) { this->objectNumber = num; }
 
 int Tracker::getObjectNumber() { return this->objectNumber; }
@@ -54,13 +58,17 @@ void Tracker::setTrained(bool isTrained) { this->isTrained = isTrained; }
 
 bool Tracker::getTrained() { return this->isTrained; }
 
-void Tracker::setTimeStamp(double timeStamp) { this->timeStamp = timeStamp; }
+void Tracker::setTimeStamp(float timeStamp) { this->timeStamp = timeStamp; }
 
-double Tracker::getTimeStamp() { return this->timeStamp; }
+float Tracker::getTimeStamp() { return this->timeStamp; }
 
 int Tracker::getFrameCount() { return this->frameCount; }
 
 void Tracker::setFrameCount(int frameCount) { this->frameCount = frameCount; }
+
+void Tracker::setExData(vector<exData*> *exData) { this->exData = exData; }
+
+vector<exData*> Tracker::getExData() { return this->exData; }
 
 void Tracker::nextPlayer() { this->currentId++; this->incrementTime(); }
 
@@ -91,22 +99,51 @@ void Tracker::incrementTime()
 void Tracker::exportData()
 {
     ofstream ofs;
-    QFile f(QString(this->exFileName.c_str()));
-    ofs.open((f.fileName().toStdString().c_str()));
-    vector<struct traj*>::iterator begin, end;
-    begin = this->trj.begin();
-    end = this->trj.end();
+//    QFile f(QString(this->exFileName.c_str()));
+    ofs.open(this->getExFileName());
 
-    for(; begin != end; begin++)
+    if(this->automatic)
     {
-        ofs << this->timeStamp << ",";
-        ofs << (*begin)->playerID << ",";
-        ofs << (*begin)->currPt.x << ",";
-        ofs << (*begin)->currPt.y << ",";
-        ofs << (*begin)->precision << ",";
-        ofs << (*begin)->isCorrect << ",";
-        ofs << (*begin)->occlusion << endl;
+        vector<struct traj*>::iterator begin, end;
+        begin = this->trj.begin();
+        end = this->trj.end();
+
+        for(; begin != end; begin++)
+        {
+            ofs << this->timeStamp << ",";
+            ofs << (*begin)->playerID << ",";
+            ofs << (*begin)->currPt.x << ",";
+            ofs << (*begin)->currPt.y << ",";
+            ofs << (*begin)->precision << ",";
+            ofs << (*begin)->isCorrect << ",";
+            ofs << (*begin)->occlusion << endl;
+        }
     }
+    else
+    {
+        struct traj *tmp  = this->trj[this->currentId];
+        ofs << this->timeStamp << ",";
+        ofs << tmp->currPt.x << ",";
+        ofs << tmp->currPt.y << ",";
+        ofs << tmp->precision << ",";
+        ofs << tmp->isCorrect << ",";
+        ofs << tmp->occlusion << endl;
+    }
+    ofs.close();
+    return;
+}
+
+void Tracker::exportData(exData *data)
+{
+    ofstream ofs;
+    ofs.open(this->exFileName, ios_base::app);
+    ofs << data->playerID << ",";
+    ofs << data->timeStamp << ",";
+    ofs << data->currPt.x << ",";
+    ofs << data->currPt.y << ",";
+    ofs << data->precision << ",";
+    ofs << data->isCorrect << ",";
+    ofs << data->occlusion << endl;
     ofs.close();
     return;
 }
@@ -120,6 +157,23 @@ void Tracker::prepareTraj(int trajCount)
         tmp->playerID = i;
         this->trj.push_back(tmp);
     }
+}
+
+void Tracker::track(Point2f pt)
+{
+//    struct traj *tmpTrj = this->trj[this->currentId];
+//    tmpTrj->derivX = this->isFirst ? 0 : tmpTrj->currPt.x - tmpTrj->prevPt.x;
+//    tmpTrj->derivY = this->isFirst ? 0 : tmpTrj->currPt.y - tmpTrj->prevPt.y;
+//    swap(tmpTrj->currPt, tmpTrj->prevPt);
+//    tmpTrj->currPt = pt;
+    struct exData *tmp = new struct exData;
+    tmp->timeStamp = this->timeStamp;
+    tmp->playerID = this->currentId;
+    tmp->currPt = pt;
+    tmp->isCorrect = 1;
+    tmp->occlusion = 0;
+    tmp->precision = 1.0;
+    this->exData->push_back(tmp);
 }
 
 void Tracker::match()
@@ -185,13 +239,13 @@ void Tracker::match()
 
     if(this->isFirst)
     {
-        tmpTraj->currPt = Point2d(roiRect.x, roiRect.y);
-        tmpTraj->prevPt = Point2d(roiRect.x, roiRect.y);
+        tmpTraj->currPt = Point2f(roiRect.x, roiRect.y);
+        tmpTraj->prevPt = Point2f(roiRect.x, roiRect.y);
     }
     else
     {
         swap(tmpTraj->currPt, tmpTraj->prevPt);
-        tmpTraj->currPt = Point2d(roiRect.x, roiRect.y);
+        tmpTraj->currPt = Point2f(roiRect.x, roiRect.y);
     }
     tmpTraj->derivX = tmpTraj->currPt.x - tmpTraj->prevPt.x;
     tmpTraj->derivY = tmpTraj->currPt.y - tmpTraj->prevPt.y;
