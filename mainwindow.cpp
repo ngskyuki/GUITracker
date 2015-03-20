@@ -184,7 +184,7 @@ void MainWindow::on_btnCommit_clicked()
 
     for(; begin != end; begin++)
     {
-//        this->tracker->exportData(begin);
+        this->tracker->exportData(*begin);
     }
 }
 

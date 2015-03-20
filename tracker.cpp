@@ -66,9 +66,9 @@ int Tracker::getFrameCount() { return this->frameCount; }
 
 void Tracker::setFrameCount(int frameCount) { this->frameCount = frameCount; }
 
-void Tracker::setExData(vector<exData*> *exData) { this->exData = exData; }
+void Tracker::setExData(vector<struct exData*> *exData) { this->exData = exData; }
 
-vector<exData*> Tracker::getExData() { return this->exData; }
+vector<exData*> *Tracker::getExData() { return this->exData; }
 
 void Tracker::nextPlayer() { this->currentId++; this->incrementTime(); }
 
@@ -133,7 +133,7 @@ void Tracker::exportData()
     return;
 }
 
-void Tracker::exportData(exData *data)
+void Tracker::exportData(struct exData *data)
 {
     ofstream ofs;
     ofs.open(this->exFileName, ios_base::app);
