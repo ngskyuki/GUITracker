@@ -25,9 +25,11 @@ class SettingDialog : public QDialog
 
 public:
     explicit SettingDialog(QWidget *parent = 0);
-    SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight);
+    SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight, QSize size);
     ~SettingDialog();
     void setPointImage();
+    int getWidth();
+    int getHeight();
     Point2f *getSrcPtLeft();
     Point2f *getSrcPtRight();
     bool validate();
@@ -43,6 +45,9 @@ private:
     QImage imgRight;
     int pointNum;
     int imageNum;
+
+    int width;
+    int height;
 
     Point2f currPt;
 

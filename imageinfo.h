@@ -18,7 +18,9 @@ public:
     ~ImageInfo();
 
     void setCapture(string fileNames[]);
-    VideoCapture *getCaputre();
+    VideoCapture *getCapture();
+    void setCaptureNumber(double num);
+    double getCaptureNumber();
     void setTmpLeftImg(Mat img);
     Mat getTmpLeftImg();
     void setTmpRightImg(Mat img);

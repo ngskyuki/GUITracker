@@ -31,8 +31,6 @@ public:
 private slots:
     void on_btnChooseSrcFile_clicked();
 
-    void on_btnChooseBgFile_clicked();
-
     void on_btnChooseExFile_clicked();
 
     void on_btnStart_clicked();

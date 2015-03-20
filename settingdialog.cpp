@@ -1,7 +1,7 @@
 #include "settingdialog.h"
 #include "ui_settingdialog.h"
 
-SettingDialog::SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight) :
+SettingDialog::SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight, QSize size) :
     QDialog(parent),
     ui(new Ui::SettingDialog)
 {
@@ -11,8 +11,11 @@ SettingDialog::SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight) :
     this->imgRight = imgRight;
     this->pointNum = 0;
     this->imageNum = 0;
-
+    this->ui->graphicsView->resize(size);
     this->ui->lblPoint->setText("click left upper corner.");
+
+    this->width = size.width();
+    this->height = size.height();
 
     QGraphicsScene *scene = new QGraphicsScene;
     scene->addPixmap(QPixmap::fromImage(imgLeft));
@@ -24,6 +27,10 @@ SettingDialog::~SettingDialog()
 {
     delete ui;
 }
+
+int SettingDialog::getWidth() { return this->width; }
+
+int SettingDialog::getHeight() { return this->height; }
 
 Point2f *SettingDialog::getSrcPtLeft() { return this->srcPtLeft; }
 
@@ -41,7 +48,7 @@ bool SettingDialog::eventFilter(QObject *obj, QEvent *event)
     {
         QMouseEvent *mEvent = static_cast<QMouseEvent*>(event);
         if(mEvent->x() < 10 || mEvent->y() < 10) return false;
-        if(mEvent->x() > 560 || mEvent->y() > 385) return false;
+        if(mEvent->x() > this->width || mEvent->y() > this->height) return false;
         this->ui->txtPoint->setText(QString::number(mEvent->x()) + ", " + QString::number(mEvent->y()));
         return true;
     }

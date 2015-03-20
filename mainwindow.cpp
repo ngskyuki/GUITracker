@@ -53,10 +53,6 @@ void MainWindow::on_btnChooseSrcFile_clicked()
 //    this->matcher->setup();
 }
 
-void MainWindow::on_btnChooseBgFile_clicked()
-{
-//    this->matcher->setBgFileName(GuiUtils::getFilePath(this));
-}
 
 void MainWindow::on_btnChooseExFile_clicked()
 {
@@ -74,7 +70,7 @@ void MainWindow::on_btnChooseExFile_clicked()
 void MainWindow::on_btnStart_clicked()
 {
     this->stopFlag = false;
-    if(!this->imgInfo->getInitialized())
+    if(!(this->imgInfo->getInitialized()))
     {
         QMessageBox::warning(this, tr("Warning!"),
                              tr("Please define corners of src image!"),
@@ -156,12 +152,15 @@ void MainWindow::on_btnInit_clicked()
                              QMessageBox::Ok);
     }
     SettingDialog *dialog = new SettingDialog(this, GuiUtils::Mat2QImg(this->imgInfo->getTmpLeftImg()),
-                                             GuiUtils::Mat2QImg(this->imgInfo->getTmpRightImg()));
+                                             GuiUtils::Mat2QImg(this->imgInfo->getTmpRightImg()),
+                                              QSize(this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_WIDTH),
+                                                    this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_HEIGHT)));
     dialog->exec();
     if(dialog->result() == QDialog::Accepted)
     {
         this->imgInfo->setSrcPtLeft(dialog->getSrcPtLeft());
         this->imgInfo->setSrcPtRight(dialog->getSrcPtRight());
+        this->imgInfo->setDstSize(Size(dialog->getWidth(), dialog->getHeight()));
         this->imgInfo->setInitialized(true);
         this->initialized = true;
     }
@@ -186,6 +185,9 @@ void MainWindow::on_btnCommit_clicked()
     {
         this->tracker->exportData(*begin);
     }
+
+    vector<struct exData*> *newVector = new vector<struct exData*>();
+    this->tracker->setExData(newVector);
 }
 
 void MainWindow::on_btnPreview_clicked()

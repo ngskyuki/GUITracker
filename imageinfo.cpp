@@ -21,12 +21,20 @@ void ImageInfo::setCapture(string fileNames[])
     this->capture[0] = VideoCapture(fileNames[0]);
     this->capture[1] = VideoCapture(fileNames[1]);
 }
-VideoCapture *ImageInfo::getCaputre()
+VideoCapture *ImageInfo::getCapture()
 {
     /*Validation*/
     if(this->capture == NULL) { cout << "Captures are not set yet." << endl; return NULL; }
     return this->capture;
 }
+
+void ImageInfo::setCaptureNumber(double num)
+{
+    this->capture[0].set(CAP_PROP_FRAME_COUNT, num);
+    this->capture[1].set(CAP_PROP_FRAME_COUNT, num);
+}
+
+double ImageInfo::getCaptureNumber() { return this->capture[0].get(CAP_PROP_FRAME_COUNT); }
 
 void ImageInfo::setTmpLeftImg(Mat img) { this->tmpLeftImg = img; }
 
