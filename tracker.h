@@ -63,8 +63,8 @@ public:
     bool getTrained();
     void setTimeStamp(float timeStamp);
     float getTimeStamp();
-    void setFrameCount(int frameCount);
-    int getFrameCount();
+    void setFrameCount(double frameCount);
+    double getFrameCount();
     void setExData(vector<struct exData*> *exData);
     vector<struct exData*> *getExData();
 
@@ -88,7 +88,7 @@ private:\
     ImageInfo *imgInfo;
     std::vector<struct traj*> trj;
     float timeStamp;
-    int frameCount;
+    double frameCount;
     vector<struct exData*> *exData;
     void prepareTemplates();
 

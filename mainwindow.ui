@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>787</width>
+    <width>1240</width>
     <height>450</height>
    </rect>
   </property>
@@ -19,16 +19,19 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>550</width>
-      <height>375</height>
+      <width>1074</width>
+      <height>269</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="btnChooseSrcFile">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>10</y>
+      <x>0</x>
+      <y>310</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -40,8 +43,8 @@
    <widget class="QPushButton" name="btnChooseExFile">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>50</y>
+      <x>0</x>
+      <y>350</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -53,8 +56,8 @@
    <widget class="QPushButton" name="btnStart">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>130</y>
+      <x>330</x>
+      <y>310</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -66,8 +69,8 @@
    <widget class="QPushButton" name="btnStop">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>170</y>
+      <x>330</x>
+      <y>350</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -77,10 +80,13 @@
     </property>
    </widget>
    <widget class="QPushButton" name="btnTrain">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>90</y>
+      <x>160</x>
+      <y>310</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -92,8 +98,8 @@
    <widget class="QLabel" name="frameCountLabel">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>370</y>
+      <x>690</x>
+      <y>360</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -105,8 +111,8 @@
    <widget class="QLabel" name="constFrameLabel">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>370</y>
+      <x>610</x>
+      <y>360</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -118,8 +124,8 @@
    <widget class="QLabel" name="coordinates">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>350</y>
+      <x>610</x>
+      <y>340</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -131,8 +137,8 @@
    <widget class="QPushButton" name="btnInit">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>210</y>
+      <x>160</x>
+      <y>350</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -144,8 +150,8 @@
    <widget class="QCheckBox" name="isAutomatic">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>300</y>
+      <x>790</x>
+      <y>320</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -157,8 +163,8 @@
    <widget class="QLabel" name="constCoordinatesLabel">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>330</y>
+      <x>610</x>
+      <y>320</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -170,8 +176,8 @@
    <widget class="QLabel" name="curPlayerId">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>330</y>
+      <x>750</x>
+      <y>320</y>
       <width>21</width>
       <height>16</height>
      </rect>
@@ -183,8 +189,8 @@
    <widget class="QPushButton" name="btnCommit">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>250</y>
+      <x>490</x>
+      <y>310</y>
       <width>81</width>
       <height>41</height>
      </rect>
@@ -196,8 +202,8 @@
    <widget class="QPushButton" name="btnPreview">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>250</y>
+      <x>490</x>
+      <y>350</y>
       <width>81</width>
       <height>41</height>
      </rect>
@@ -206,13 +212,26 @@
      <string>Preview</string>
     </property>
    </widget>
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>791</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>787</width>
+     <width>1240</width>
      <height>22</height>
     </rect>
    </property>

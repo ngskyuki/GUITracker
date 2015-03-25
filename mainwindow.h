@@ -18,6 +18,8 @@
 #include "tracker.h"
 #include "imageinfo.h"
 
+void onTrackBar(int value, void *data);
+
 namespace Ui {
 class MainWindow;
 }
@@ -28,6 +30,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void setImg(QImage img);
 private slots:
     void on_btnChooseSrcFile_clicked();
 
@@ -47,10 +50,13 @@ private slots:
 
     void on_btnPreview_clicked();
 
+    void on_horizontalSlider_valueChanged(int value);
+
 private:
     bool initialized;
     bool stopFlag;
     int currentId;
+    int position;
     Point2d currPoint;
     Ui::MainWindow *ui;
 
@@ -63,9 +69,10 @@ private:
     cv::Mat srcMat;
     QPixmap item;
 
-    void setImg(QImage img);
-    void tracking();
+    void tracking(Point2f pt);
     void prepareTracker();
+    void setCapturePosition(int pos);
+    void sendData();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

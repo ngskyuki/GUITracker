@@ -5,6 +5,7 @@ Tracker::Tracker(int objectNumber, bool automatic, bool isTrained)
     this->objectNumber = objectNumber;
     this->automatic = automatic;
     this->isTrained = isTrained;
+    this->exFileName = "/users/yuukifujita/develop/test.csv";
     this->timeStamp = 0.0;
     this->frameCount = 0;
     this->currentId = 0;
@@ -17,10 +18,11 @@ Tracker::Tracker(ImageInfo *imgInfo, int objectNumber, bool automatic, bool isTr
     this->isTrained = isTrained;
     this->automatic = automatic;
     this->prepareTraj(this->objectNumber);
-
+    this->exFileName = "/users/yuukifujita/develop/test.csv";
     this->timeStamp = 0.0;
     this->frameCount = 0;
     this->currentId = 0;
+    this->exData = new vector<struct exData*>();
 }
 
 Tracker::~Tracker()
@@ -62,9 +64,9 @@ void Tracker::setTimeStamp(float timeStamp) { this->timeStamp = timeStamp; }
 
 float Tracker::getTimeStamp() { return this->timeStamp; }
 
-int Tracker::getFrameCount() { return this->frameCount; }
+double Tracker::getFrameCount() { return this->frameCount; }
 
-void Tracker::setFrameCount(int frameCount) { this->frameCount = frameCount; }
+void Tracker::setFrameCount(double frameCount) { this->frameCount = frameCount; }
 
 void Tracker::setExData(vector<struct exData*> *exData) { this->exData = exData; }
 
@@ -83,15 +85,15 @@ void Tracker::incrementTime()
 {
     int sec;
     int count;
-    if(frameCount % 33 == 0)
+    if((int)this->frameCount % 33 == 0)
     {
-        sec = frameCount / 33 + 1;
+        sec = this->frameCount / 33 + 1;
         count = 0;
     }
     else
     {
-        sec = frameCount / 33;
-        count = frameCount % 33;
+        sec = this->frameCount / 33;
+        count = (int)this->frameCount % 33;
     }
     this->timeStamp = sec + count * 0.03;
 }
@@ -161,11 +163,7 @@ void Tracker::prepareTraj(int trajCount)
 
 void Tracker::track(Point2f pt)
 {
-//    struct traj *tmpTrj = this->trj[this->currentId];
-//    tmpTrj->derivX = this->isFirst ? 0 : tmpTrj->currPt.x - tmpTrj->prevPt.x;
-//    tmpTrj->derivY = this->isFirst ? 0 : tmpTrj->currPt.y - tmpTrj->prevPt.y;
-//    swap(tmpTrj->currPt, tmpTrj->prevPt);
-//    tmpTrj->currPt = pt;
+    if(this->exData == NULL) this->exData = new vector<struct exData*>();
     struct exData *tmp = new struct exData;
     tmp->timeStamp = this->timeStamp;
     tmp->playerID = this->currentId;
@@ -174,6 +172,20 @@ void Tracker::track(Point2f pt)
     tmp->occlusion = 0;
     tmp->precision = 1.0;
     this->exData->push_back(tmp);
+    this->imgInfo->paintCircle(pt);
+    this->imgInfo->paintId(pt, this->currentId);
+    if(this->currentId == this->objectNumber)
+    {
+        //Send next frame and initialize current player ID, time stamp, frame count.
+        this->next();
+        this->currentId = 0;
+        this->incrementTime();
+    }
+    else
+    {
+        //Set current player ID to next player
+        this->nextPlayer();
+    }
 }
 
 void Tracker::match()
@@ -257,8 +269,8 @@ void Tracker::match()
 bool Tracker::validate()
 {
     bool result = true;
-    if(this->exFileName == NULL) result = false;
-    if(this->imgInfo == NULL) result = false;
-    if(this->trj.size() == 0) result = false;
+//    if(this->exFileName == NULL) result = false;
+//    if(this->imgInfo == NULL) result = false;
+//    if(this->trj.size() == 0) result = false;
     return result;
 }

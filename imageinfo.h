@@ -37,8 +37,7 @@ public:
     Rect getRoiRect();
     void setDstSize(Size size);
     Size getDstSize();
-
-    void setInitialized(bool intialized);
+    void setInitialized(bool isInitialized);
     bool getInitialized();
 
     void next();
@@ -46,6 +45,8 @@ public:
     void mergeImg();
     void transHomography();
     bool validate();
+    void paintCircle(Point2f pt);
+    void paintId(Point2f pt, int id);
 
     Mat tmpImg;
     Mat dispImg;
