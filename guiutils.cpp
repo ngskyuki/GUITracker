@@ -12,7 +12,10 @@ GuiUtils::~GuiUtils()
 
 std::string GuiUtils::getFilePath(QWidget *parent)
 {
-    QString fileName = QFileDialog::getOpenFileName(parent, QString("Open File"), QString(), QString());
+    QFileDialog *dialog = new QFileDialog(parent);
+    QString fileName = dialog->getOpenFileName(parent, QString("Open File"), QString(), QString());
+    dialog->close();
+    dialog->~QFileDialog();
     return fileName.toStdString();
 }
 

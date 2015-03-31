@@ -8,19 +8,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     this->initialized = false;
     ui->setupUi(this);
-    namedWindow("TrackBar");
     qApp->installEventFilter(this);
 
+    this->ui->btnStop->setEnabled(false);
+
     ui->graphicsView->setMouseTracking(true);
-    string fileNames[] = {
-        "/users/yuukifujita/develop/playertracking/playertracking/footballSampleLeft.mp4",
-        "/users/yuukifujita/develop/playertracking/playertracking/footballSampleRight.mp4"
-    };
-    this->imgInfo = new ImageInfo(fileNames);
-    cout << "FPS is: " << this->imgInfo->getCapture()[0].get(CAP_PROP_FPS) << endl;
-    this->tracker = new Tracker(this->imgInfo, 10);
-    this->ui->horizontalSlider->setMaximum(this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_COUNT));
-    this->ui->horizontalSlider->setMinimum(0);
+    this->imgInfo = new ImageInfo();
+    this->tracker = new Tracker(this->imgInfo);
+//    this->imgInfo = new ImageInfo(fileNames);
+//    this->tracker = new Tracker(this->imgInfo, 10);
+//    this->ui->horizontalSlider->setMaximum(this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_COUNT));
+//    this->ui->horizontalSlider->setMinimum(0);
 }
 
 void MainWindow::on_horizontalSlider_valueChanged(int value)
@@ -53,13 +51,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 obj == this->ui->constFrameLabel ||
                 obj == this->ui->btnInit ||
                 obj == this->ui->btnChooseExFile ||
-                obj == this->ui->btnChooseSrcFile ||
                 obj == this->ui->btnStart ||
                 obj == this->ui->btnStop ||
                 obj == this->ui->btnTrain) return false;
         QMouseEvent *mEvent = static_cast<QMouseEvent*>(event);
-        if(mEvent->x() < 10 || mEvent->y() < 10) return false;
-        if(mEvent->x() > 537 || mEvent->y() > 260) return false;
+        if(mEvent->x() < this->ui->graphicsView->x() ||
+                mEvent->y() < this->ui->graphicsView->y()) return false;
+        if(mEvent->x() > this->ui->graphicsView->width() + this->ui->graphicsView->x() ||
+                mEvent->y() > this->ui->graphicsView->height() + this->ui->graphicsView->y()) return false;
         this->ui->coordinates->setText(QString::number(mEvent->x() - this->ui->graphicsView->x())
                                        + ", "
                                        + QString::number(mEvent->y() - this->ui->graphicsView->y()));
@@ -73,18 +72,31 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-
-void MainWindow::on_btnChooseSrcFile_clicked()
+void MainWindow::init()
 {
-//    this->matcher->setLeftSrcFileName(GuiUtils::getFilePath(this));
-//    this->matcher->setup();
+    this->fileNames[0] = this->leftFileName;
+    this->fileNames[1] = this->rightFileName;
+    this->imgInfo->setCapture(this->fileNames);
+    this->imgInfo->setup(true);
+    this->ui->horizontalSlider->setMaximum(this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_COUNT));
+    this->ui->horizontalSlider->setMinimum(0);
 }
 
-
-void MainWindow::on_btnChooseExFile_clicked()
+void MainWindow::on_btnChooseSrcLeftFile_clicked()
 {
-    this->tracker->setExFileName(GuiUtils::getFilePath(this));
+    this->leftFileName = GuiUtils::getFilePath(this);
+    if(this->leftFileName != "" && this->rightFileName != "")
+        this->init();
 }
+
+void MainWindow::on_btnChooseSrcRightFile_clicked()
+{
+    this->rightFileName = GuiUtils::getFilePath(this);
+    if(this->leftFileName != "" && this->rightFileName != "")
+        this->init();
+}
+
+void MainWindow::on_btnChooseExFile_clicked() { this->tracker->setExFileName(GuiUtils::getFilePath(this)); }
 
 //void MainWindow::setCoordinates(QPointF pt)
 //{
@@ -96,12 +108,15 @@ void MainWindow::on_btnChooseExFile_clicked()
 
 void MainWindow::on_btnStart_clicked()
 {
-    this->stopFlag = false;
-    this->ui->btnStart->setEnabled(false);
-    this->ui->btnStop->setEnabled(true);
-
     /*Validation area*/
-    if(!(this->imgInfo->getInitialized()))
+    if(this->tracker->getObjectNumber() == 0)
+    {
+        QMessageBox::warning(this, tr("Warning!"),
+                             tr("Please set object number!"),
+                             QMessageBox::Ok);
+        return;
+    }
+    if(!this->initialized)
     {
         QMessageBox::warning(this, tr("Warning!"),
                              tr("Please define corners of src image!"),
@@ -115,7 +130,17 @@ void MainWindow::on_btnStart_clicked()
                              QMessageBox::Ok);
         return;
     }
+    if(this->tracker->getExFileName() == "")
+    {
+        QMessageBox::warning(this, tr("Warning!"),
+                             tr("Please set export file name!"),
+                             QMessageBox::Ok);
+        return;
+    }
 
+    this->stopFlag = false;
+    this->ui->btnStart->setEnabled(false);
+    this->ui->btnStop->setEnabled(true);
     /*Tracking start*/
     char buff[20];
 
@@ -199,6 +224,19 @@ void MainWindow::prepareTracker()
 
 void MainWindow::on_btnInit_clicked()
 {
+    if(this->leftFileName == "" & this->rightFileName == "")
+    {
+        QMessageBox::warning(this, tr("Warning!"),
+                             tr("Please choose source file!"),
+                             QMessageBox::Ok);
+        return;
+    }
+    if(this->imgInfo == NULL)
+    {
+        QMessageBox::warning(this, tr("Warning!"),
+                             tr("Please choose source file."),
+                             QMessageBox::Ok);
+    }
     if(!(this->imgInfo->validate()))
     {
         QMessageBox::warning(this, tr("Warning!"),
@@ -283,4 +321,8 @@ void MainWindow::on_btnPreview_clicked()
         this->tracker->setCurrentId(this->tracker->getCurrentId() - 1);
 }
 
-
+void MainWindow::on_btnOk_clicked()
+{
+    int objNum = this->ui->txtObjectNumber->text().toInt();
+    this->tracker->setObjectNumber(objNum);
+}

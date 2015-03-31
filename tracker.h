@@ -44,7 +44,8 @@ class Tracker
 {
 public:
     Tracker(int objectNumber = 0, bool automatic = false, bool isTrained = false);
-    Tracker(ImageInfo *imgInfo, int objectNumber = 0, bool automatic = false, bool isTrained = false);
+//    Tracker(ImageInfo *imgInfo, int objectNumber = 0, bool automatic = false, bool isTrained = false);
+    Tracker(ImageInfo *imgInfo);
     ~Tracker();
     void setup();
     void setImageInfo(ImageInfo *info);

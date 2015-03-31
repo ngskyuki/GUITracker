@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="mygraphicsview" name="graphicsView">
+   <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -24,20 +24,20 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnChooseSrcFile">
+   <widget class="QPushButton" name="btnChooseSrcLeftFile">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>310</y>
-      <width>151</width>
+      <width>81</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Source File</string>
+     <string>SrcLeft</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnChooseExFile">
@@ -151,7 +151,7 @@
     <property name="geometry">
      <rect>
       <x>790</x>
-      <y>320</y>
+      <y>360</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -225,6 +225,58 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnChooseSrcRightFile">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>310</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SrcRight</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="constObjectNumber">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>320</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set object number</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnOk">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>331</y>
+      <width>51</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OK</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="txtObjectNumber">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>337</y>
+      <width>91</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -236,24 +288,9 @@
     </rect>
    </property>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>mygraphicsview</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">mygraphicsview.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

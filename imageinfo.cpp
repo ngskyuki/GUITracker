@@ -2,7 +2,16 @@
 
 ImageInfo::ImageInfo()
 {
+    this->dstSize = Size(537, 269);
+    this->dstPtLeft[0] = Point(0, 0);
+    this->dstPtLeft[1] = Point(0, 269);
+    this->dstPtLeft[2] = Point(537, 269);
+    this->dstPtLeft[3] = Point(537, 0);
 
+    this->dstPtRight[0] = Point(0, 0);
+    this->dstPtRight[1] = Point(0, 269);
+    this->dstPtRight[2] = Point(537, 269);
+    this->dstPtRight[3] = Point(537, 0);
 }
 
 ImageInfo::ImageInfo(string fileNames[])

@@ -11,14 +11,28 @@ Tracker::Tracker(int objectNumber, bool automatic, bool isTrained)
     this->currentId = 0;
 }
 
-Tracker::Tracker(ImageInfo *imgInfo, int objectNumber, bool automatic, bool isTrained)
+//Tracker::Tracker(ImageInfo *imgInfo, int objectNumber, bool automatic, bool isTrained)
+//{
+//    this->imgInfo = imgInfo;
+//    this->objectNumber = objectNumber;
+//    this->isTrained = isTrained;
+//    this->automatic = automatic;
+//    this->prepareTraj(this->objectNumber);
+//    this->exFileName = "/users/yuukifujita/develop/test.csv";
+//    this->timeStamp = 0.0;
+//    this->frameCount = 0;
+//    this->currentId = 0;
+//    this->exData = new vector<struct exData*>();
+//}
+
+Tracker::Tracker(ImageInfo *imgInfo)
 {
     this->imgInfo = imgInfo;
-    this->objectNumber = objectNumber;
-    this->isTrained = isTrained;
-    this->automatic = automatic;
-    this->prepareTraj(this->objectNumber);
-    this->exFileName = "/users/yuukifujita/develop/test.csv";
+//    this->objectNumber = objectNumber;
+//    this->isTrained = isTrained;
+//    this->automatic = automatic;
+//    this->prepareTraj(this->objectNumber);
+//    this->exFileName = "/users/yuukifujita/develop/test.csv";
     this->timeStamp = 0.0;
     this->frameCount = 0;
     this->currentId = 0;
@@ -44,7 +58,7 @@ void Tracker::setAutomatic(bool automatic) { this->automatic = automatic; }
 
 bool Tracker::getAutomatic() { return this->automatic; }
 
-void Tracker::setObjectNumber(int num) { this->objectNumber = num; }
+void Tracker::setObjectNumber(int num) { this->objectNumber = num; this->prepareTraj(num); }
 
 int Tracker::getObjectNumber() { return this->objectNumber; }
 
@@ -152,6 +166,7 @@ void Tracker::exportData(struct exData *data)
 
 void Tracker::prepareTraj(int trajCount)
 {
+    if(this->trj.size() > 0) this->trj.clear();
     struct traj *tmp;
     for(int i = 0; i < trajCount; i++)
     {

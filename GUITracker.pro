@@ -34,7 +34,7 @@ HEADERS  += mainwindow.h \
     imageinfo.h \
     tracker.h
 
-LIBS += -L/usr/local/lib \
+LIBS += -L /usr/local/lib \
     -lopencv_core \
     -lopencv_highgui \
     -lopencv_ml \
@@ -51,7 +51,7 @@ CONFIG   -= x86_64
 
 INCLUDEPATH += /usr/local/include/opencv2
 
-DEPENDPATH += /usr/local/lib
+
 
 DEPENDPATH += /usr/local/include/opencv
 

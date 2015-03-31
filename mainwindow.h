@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QMatrix>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QMouseEvent>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -18,7 +19,7 @@
 #include "tracker.h"
 #include "imageinfo.h"
 
-void onTrackBar(int value, void *data);
+using namespace std;
 
 namespace Ui {
 class MainWindow;
@@ -32,7 +33,10 @@ public:
     ~MainWindow();
     void setImg(QImage img);
 private slots:
-    void on_btnChooseSrcFile_clicked();
+
+    void on_btnChooseSrcLeftFile_clicked();
+
+    void on_btnChooseSrcRightFile_clicked();
 
     void on_btnChooseExFile_clicked();
 
@@ -52,11 +56,17 @@ private slots:
 
     void on_horizontalSlider_valueChanged(int value);
 
+    void on_btnOk_clicked();
+
 private:
     bool initialized;
     bool stopFlag;
     int currentId;
     int position;
+    string leftFileName;
+    string rightFileName;
+
+    string fileNames[2];
     Point2d currPoint;
     Ui::MainWindow *ui;
 
@@ -69,6 +79,7 @@ private:
     cv::Mat srcMat;
     QPixmap item;
 
+    void init();
     void tracking(Point2f pt);
     void prepareTracker();
     void setCapturePosition(int pos);
