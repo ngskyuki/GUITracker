@@ -58,6 +58,8 @@ private slots:
 
     void on_btnOk_clicked();
 
+    void on_btnSouceNumberOk_clicked();
+
 private:
     bool initialized;
     bool stopFlag;

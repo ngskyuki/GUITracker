@@ -150,8 +150,8 @@
    <widget class="QCheckBox" name="isAutomatic">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>360</y>
+      <x>800</x>
+      <y>383</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -217,7 +217,7 @@
      <rect>
       <x>10</x>
       <y>280</y>
-      <width>791</width>
+      <width>761</width>
       <height>22</height>
      </rect>
     </property>
@@ -244,8 +244,8 @@
    <widget class="QLabel" name="constObjectNumber">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>320</y>
+      <x>800</x>
+      <y>343</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -257,8 +257,8 @@
    <widget class="QPushButton" name="btnOk">
     <property name="geometry">
      <rect>
-      <x>900</x>
-      <y>331</y>
+      <x>910</x>
+      <y>354</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -270,11 +270,53 @@
    <widget class="QSpinBox" name="txtObjectNumber">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>337</y>
+      <x>820</x>
+      <y>360</y>
       <width>91</width>
       <height>24</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="txtSourceNumber">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>316</y>
+      <width>91</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>2</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="constSourceNumber">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>299</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set Source number</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnSouceNumberOk">
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>310</y>
+      <width>51</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OK</string>
     </property>
    </widget>
   </widget>

@@ -25,7 +25,7 @@ class SettingDialog : public QDialog
 
 public:
     explicit SettingDialog(QWidget *parent = 0);
-    SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight, QSize size);
+    SettingDialog(QWidget *parent, int frameNum, QImage imgLeft, QImage imgRight, QSize size);
     ~SettingDialog();
     void setPointImage();
     int getWidth();
@@ -55,6 +55,8 @@ private:
     Point2f dstPtLeft[4];
     Point2f srcPtRight[4];
     Point2f dstPt2Right[4];
+
+    int frameNumber;
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 };

@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->graphicsView->setMouseTracking(true);
     this->imgInfo = new ImageInfo();
+    this->imgInfo->setSourceNumber(ImageInfo::SourceNumber::One);
     this->tracker = new Tracker(this->imgInfo);
 //    this->imgInfo = new ImageInfo(fileNames);
 //    this->tracker = new Tracker(this->imgInfo, 10);
@@ -75,7 +76,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::init()
 {
     this->fileNames[0] = this->leftFileName;
-    this->fileNames[1] = this->rightFileName;
+    if(this->imgInfo->getSourceNumber() == ImageInfo::SourceNumber::Two)
+        this->fileNames[1] = this->rightFileName;
     this->imgInfo->setCapture(this->fileNames);
     this->imgInfo->setup(true);
     this->ui->horizontalSlider->setMaximum(this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_COUNT));
@@ -85,12 +87,22 @@ void MainWindow::init()
 void MainWindow::on_btnChooseSrcLeftFile_clicked()
 {
     this->leftFileName = GuiUtils::getFilePath(this);
+    if(this->imgInfo->getSourceNumber() == ImageInfo::SourceNumber::One && this->leftFileName != "")
+    {
+        this->init();
+        return;
+    }
     if(this->leftFileName != "" && this->rightFileName != "")
         this->init();
 }
 
 void MainWindow::on_btnChooseSrcRightFile_clicked()
 {
+    if(this->imgInfo->getSourceNumber() == ImageInfo::SourceNumber::One) {
+        QMessageBox::warning(this, tr("Warning!"), tr("Please set Source Number '2'."),
+                            QMessageBox::Ok);
+        return;
+    }
     this->rightFileName = GuiUtils::getFilePath(this);
     if(this->leftFileName != "" && this->rightFileName != "")
         this->init();
@@ -224,7 +236,8 @@ void MainWindow::prepareTracker()
 
 void MainWindow::on_btnInit_clicked()
 {
-    if(this->leftFileName == "" & this->rightFileName == "")
+    if(this->leftFileName == "" && this->rightFileName == "" ||
+            this->imgInfo->getSourceNumber() == ImageInfo::SourceNumber::Two && this->rightFileName == "")
     {
         QMessageBox::warning(this, tr("Warning!"),
                              tr("Please choose source file!"),
@@ -243,16 +256,20 @@ void MainWindow::on_btnInit_clicked()
                              tr("Please initialize ImageInfo!"),
                              QMessageBox::Ok);
     }
-    SettingDialog *dialog = new SettingDialog(this, GuiUtils::Mat2QImg(this->imgInfo->getTmpLeftImg()),
-                                             GuiUtils::Mat2QImg(this->imgInfo->getTmpRightImg()),
+    SettingDialog *dialog = new SettingDialog(this,
+                                              this->imgInfo->getSourceNumber() == ImageInfo::SourceNumber::One ? 1 : 2,
+                                              GuiUtils::Mat2QImg(this->imgInfo->getTmpLeftImg()),
+                                              GuiUtils::Mat2QImg(this->imgInfo->getTmpRightImg()),
                                               QSize(this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_WIDTH),
                                                     this->imgInfo->getCapture()[0].get(CAP_PROP_FRAME_HEIGHT)));
     dialog->exec();
     if(dialog->result() == QDialog::Accepted)
     {
         this->imgInfo->setSrcPtLeft(dialog->getSrcPtLeft());
-        this->imgInfo->setSrcPtRight(dialog->getSrcPtRight());
+        if(this->imgInfo->getSourceNumber() == ImageInfo::SourceNumber::Two)
+            this->imgInfo->setSrcPtRight(dialog->getSrcPtRight());
         this->imgInfo->setDstSize(Size(537, 269));
+        this->imgInfo->setWarpPerspective();
         this->imgInfo->setInitialized(true);
         this->initialized = true;
 
@@ -325,4 +342,9 @@ void MainWindow::on_btnOk_clicked()
 {
     int objNum = this->ui->txtObjectNumber->text().toInt();
     this->tracker->setObjectNumber(objNum);
+}
+
+void MainWindow::on_btnSouceNumberOk_clicked()
+{
+    this->imgInfo->setSourceNumber(this->ui->txtSourceNumber->text().toInt() == 1 ? ImageInfo::SourceNumber::One : ImageInfo::SourceNumber::Two);
 }

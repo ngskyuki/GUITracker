@@ -17,6 +17,10 @@ public:
     ImageInfo(string fileNames[]);
     ~ImageInfo();
 
+    enum SourceNumber { One, Two, };
+
+    void setSourceNumber(SourceNumber srcNum);
+    SourceNumber getSourceNumber();
     void setCapture(string fileNames[]);
     VideoCapture *getCapture();
     void setCaptureNumber(double num);
@@ -40,6 +44,11 @@ public:
     void setInitialized(bool isInitialized);
     bool getInitialized();
 
+    void setHomographyMtxLeft(Mat homographyMtx);
+    Mat getHomographyMtxLeft();
+    void setHomographyMtxRight(Mat homographyMtx);
+    Mat getHomographyMtxRight();
+
     void next();
     void setup(bool forInit = false);
     void mergeImg();
@@ -47,16 +56,19 @@ public:
     bool validate();
     void paintCircle(Point2f pt);
     void paintId(Point2f pt, int id);
+    void setWarpPerspective();
 
     Mat tmpImg;
     Mat dispImg;
 
 private:
-
+    SourceNumber srcNumber;
     VideoCapture capture[2];
     bool initialized;
     Mat tmpLeftImg;
     Mat tmpRightImg;
+    Mat homographyMtxLeft;
+    Mat homographyMtxRight;
     Rect roiRect;
     Size dstSize;
     Point2f srcPtLeft[4];

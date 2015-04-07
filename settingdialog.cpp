@@ -1,14 +1,16 @@
 #include "settingdialog.h"
 #include "ui_settingdialog.h"
 
-SettingDialog::SettingDialog(QWidget *parent, QImage imgLeft, QImage imgRight, QSize size) :
+SettingDialog::SettingDialog(QWidget *parent, int frameNum, QImage imgLeft, QImage imgRight, QSize size) :
     QDialog(parent),
     ui(new Ui::SettingDialog)
 {
     ui->setupUi(this);
     qApp->installEventFilter(this);
+    this->frameNumber = frameNum;
     this->imgLeft = imgLeft;
-    this->imgRight = imgRight;
+    if(this->frameNumber == 2)
+        this->imgRight = imgRight;
     this->pointNum = 0;
     this->imageNum = 0;
     this->ui->graphicsView->resize(size);
@@ -34,7 +36,11 @@ int SettingDialog::getHeight() { return this->height; }
 
 Point2f *SettingDialog::getSrcPtLeft() { return this->srcPtLeft; }
 
-Point2f *SettingDialog::getSrcPtRight() { return this->srcPtRight; }
+Point2f *SettingDialog::getSrcPtRight()
+{
+    if(this->frameNumber == 1) return NULL;
+    return this->srcPtRight;
+}
 
 bool SettingDialog::eventFilter(QObject *obj, QEvent *event)
 {
@@ -88,6 +94,8 @@ void SettingDialog::setPointImage()
         if(this->imageNum == 0)
         {
             this->srcPtLeft[3] = currPt;
+            if(this->frameNumber == 1)
+                break;
             this->imageNum = 1;
             this->pointNum = -1;
             QGraphicsScene *scene = new QGraphicsScene;
@@ -106,7 +114,8 @@ void SettingDialog::setPointImage()
 void SettingDialog::on_btnOk_clicked()
 {
 //    if(true)
-    if(this->imageNum == 1 && this->pointNum == 3)
+    if(this->frameNumber == 2 && this->imageNum == 1 && this->pointNum == 3 ||
+            this->frameNumber == 1 && this->pointNum == 3)
     {
 //        if(false)
         if(!(this->validate()))
